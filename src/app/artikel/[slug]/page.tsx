@@ -3,7 +3,6 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import type { ArtikelLengkap } from '@/types/database'
-import { CitationBox } from '@/components/artikel/CitationBox'
 import { PenulisBadge } from '@/components/artikel/PenulisBadge'
 import { RelatedArticles } from '@/components/artikel/RelatedArticles'
 import Link from 'next/link'
@@ -152,23 +151,8 @@ export default async function ArtikelDetailPage({ params }: Props) {
 
         {/* ─ Sidebar ─ */}
         <aside className="lg:sticky lg:top-[80px] flex flex-col gap-4">
-          {/* Actions */}
-          <div className="bg-white border border-[rgba(28,43,43,0.10)] rounded-xl p-5">
-            <h4 className="text-[11px] font-bold uppercase tracking-wider text-[var(--ink-lt)] mb-4">Aksi</h4>
-            {artikel.pdf_url ? (
-              <a href={artikel.pdf_url} download target="_blank" rel="noreferrer"
-                className="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-[var(--ink)] text-white text-[13px] font-semibold rounded-xl hover:bg-[var(--coral)] transition-colors mb-2">
-                ⬇ Unduh PDF
-              </a>
-            ) : (
-              <div className="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-[rgba(28,43,43,0.05)] text-[var(--ink-lt)] text-[13px] font-medium rounded-xl mb-2 cursor-not-allowed">
-                📄 PDF Belum Tersedia
-              </div>
-            )}
-            <CitationBox artikel={artikel} />
-          </div>
-
-          {/* Authors */}
+          
+          {/* Authors (Tetap Dipertahankan) */}
           {artikel.penulis_list && artikel.penulis_list.length > 0 && (
             <div className="bg-white border border-[rgba(28,43,43,0.10)] rounded-xl p-5">
               <h4 className="text-[11px] font-bold uppercase tracking-wider text-[var(--ink-lt)] mb-4">Penulis</h4>
@@ -180,32 +164,17 @@ export default async function ArtikelDetailPage({ params }: Props) {
             </div>
           )}
 
-          {/* Details */}
+          {/* Rekomendasi Artikel (Menggantikan Actions & Detail) */}
           <div className="bg-white border border-[rgba(28,43,43,0.10)] rounded-xl p-5">
-            <h4 className="text-[11px] font-bold uppercase tracking-wider text-[var(--ink-lt)] mb-4">Detail</h4>
-            <dl className="space-y-2.5">
-              {[
-                ['Kelompok',      artikel.kelompok_nama],
-                ['Volume',        artikel.volume],
-                ['Edisi',         artikel.nomor_edisi],
-                ['Halaman',       artikel.halaman_mulai ? `${artikel.halaman_mulai}–${artikel.halaman_selesai}` : null],
-                ['Kata Kunci',    artikel.kata_kunci?.join(', ')],
-              ].filter(([, v]) => v).map(([label, val]) => (
-                <div key={label as string} className="flex justify-between gap-2 text-[12px]">
-                  <dt className="text-[var(--ink-lt)] flex-shrink-0">{label}</dt>
-                  <dd className="text-[var(--ink)] font-medium text-right">{val}</dd>
-                </div>
-              ))}
-            </dl>
+            <h4 className="text-[11px] font-bold uppercase tracking-wider text-[var(--ink-lt)] mb-4">Rekomendasi Terkait</h4>
+            <RelatedArticles
+              kategoriId={artikel.kategori_id}
+              currentId={artikel.id}
+            />
           </div>
+
         </aside>
       </div>
-
-      {/* Related Articles */}
-      <RelatedArticles
-        kategoriId={artikel.kategori_id}
-        currentId={artikel.id}
-      />
     </div>
   )
 }

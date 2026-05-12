@@ -84,7 +84,7 @@ export function Navbar() {
             🏝️
           </div>
           <span className="font-display text-base font-bold tracking-tight text-[var(--ink)]">
-            Jurnal Pariwisata UNY
+            Ruang Jelajah Pariwisata
           </span>
         </Link>
 

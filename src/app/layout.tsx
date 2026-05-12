@@ -3,6 +3,7 @@ import { Outfit, Cormorant_Garamond } from 'next/font/google' // Import font
 import "@/app/globals.css"
 import { Navbar } from '@/components/layout/Navbar'
 import { Toaster } from 'react-hot-toast'
+import { Footer } from '@/components/layout/Footer' // <--- Import Footer
 
 // Konfigurasi Font
 const outfit = Outfit({ 
@@ -36,6 +37,7 @@ export default function RootLayout({
         <Navbar />
         <main>{children}</main>
         <Toaster position="top-right" />
+        <Footer />
       </body>
     </html>
   )

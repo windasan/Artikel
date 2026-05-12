@@ -66,15 +66,15 @@ export default async function HomePage() {
 
         <div className="relative z-10 max-w-[780px] w-full mx-auto">
           {/* Kicker badge */}
-          <div className="inline-flex items-center gap-2 bg-white/75 border border-[rgba(28,43,43,0.15)] rounded-full px-4 py-1.5 text-[12px] font-semibold text-[var(--ink)] mb-7 backdrop-blur-md">
+          {/* <div className="inline-flex items-center gap-2 bg-white/75 border border-[rgba(28,43,43,0.15)] rounded-full px-4 py-1.5 text-[12px] font-semibold text-[var(--ink)] mb-7 backdrop-blur-md">
             <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
             Semester Genap 2024/2025 · Kelas A · UNY
-          </div>
+          </div> */}
 
           {/* Main title */}
           <h1 className="font-display font-bold leading-[0.93] tracking-[-3px] text-[var(--ink)] mb-2"
             style={{ fontSize: 'clamp(64px,11vw,116px)' }}>
-            JURNAL
+            Ruang Jelajah
           </h1>
           <h2 className="font-display font-normal italic leading-none tracking-[-1.5px] text-[var(--ink-lt)] mb-6"
             style={{ fontSize: 'clamp(32px,5.5vw,60px)' }}>
@@ -137,7 +137,7 @@ export default async function HomePage() {
         )}
       </section>
 
-      {/* ── INSTANSI FOOTER ── */}
+      {/* ── INSTANSI FOOTER ──
       <div className="bg-gradient-to-br from-[#1C2B2B] to-[#2A3F3F] py-14 px-6 text-center">
         <div className="w-[72px] h-[72px] rounded-full bg-white/90 mx-auto mb-5 flex items-center justify-center text-3xl shadow-xl">
           🏫
@@ -158,7 +158,7 @@ export default async function HomePage() {
         <p className="text-[11px] text-white/25 border-t border-white/8 pt-5">
           Hak Cipta © 2025 Program Studi Pariwisata Kelas A, Universitas Negeri Yogyakarta
         </p>
-      </div>
+      </div> */}
     </>
   )
 }

@@ -1,0 +1,75 @@
+/* src/app/globals.css */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --coral:     #F08060;
+    --coral-lt:  #FCE8DF;
+    --sage:      #7BA68A;
+    --sage-lt:   #E4F0E8;
+    --sky:       #6DAEC4;
+    --sky-lt:    #DFF0F6;
+    --gold:      #D4A853;
+    --gold-lt:   #FDF3DC;
+    --ink:       #1C2B2B;
+    --ink-md:    #3D4F4F;
+    --ink-lt:    #6B7E7E;
+    --paper:     #FDFAF6;
+    --cream:     #FFF5EE;
+  }
+
+  html { @apply scroll-smooth; }
+
+  body {
+    font-family: 'Outfit', system-ui, sans-serif;
+    background-color: var(--paper);
+    color: var(--ink);
+  }
+
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(28,43,43,0.15); border-radius: 99px; }
+}
+
+@layer components {
+  /* Grain texture overlay */
+  .grain::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: 0.35;
+  }
+
+  /* Tiptap editor prose */
+  .tiptap-editor {
+    @apply min-h-[500px] outline-none text-[15px] leading-[1.8] text-[var(--ink-md)];
+  }
+  .tiptap-editor h2 {
+    @apply font-display text-2xl font-bold text-[var(--ink)] mt-8 mb-3 tracking-tight;
+  }
+  .tiptap-editor h3 {
+    @apply font-display text-xl font-semibold text-[var(--ink)] mt-6 mb-2;
+  }
+  .tiptap-editor p { @apply mb-4; }
+  .tiptap-editor blockquote {
+    @apply border-l-[3px] border-[var(--coral)] bg-[var(--cream)] pl-5 py-3 pr-4 rounded-r-lg my-5 italic text-[var(--ink-md)];
+  }
+  .tiptap-editor ul { @apply list-disc pl-6 mb-4 space-y-1; }
+  .tiptap-editor ol { @apply list-decimal pl-6 mb-4 space-y-1; }
+  .tiptap-editor a { @apply text-[var(--coral)] underline; }
+  .tiptap-editor strong { @apply font-semibold text-[var(--ink)]; }
+  .tiptap-editor code { @apply bg-[var(--cream)] px-1.5 py-0.5 rounded text-sm font-mono; }
+  .tiptap-editor pre { @apply bg-[var(--ink)] text-[var(--cream)] p-4 rounded-xl my-4 overflow-x-auto text-sm; }
+  .tiptap-editor hr { @apply border-[var(--border)] my-8; }
+  .tiptap-editor img { @apply rounded-xl w-full my-4; }
+  .tiptap-editor table { @apply w-full border-collapse my-4 text-sm; }
+  .tiptap-editor th { @apply bg-[var(--cream)] px-4 py-2 text-left font-semibold border border-[var(--border-md)]; }
+  .tiptap-editor td { @apply px-4 py-2 border border-[var(--border)]; }
+  .tiptap-editor p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    @apply text-[rgba(28,43,43,0.25)] pointer-events-none float-left h-0;
+  }
+}

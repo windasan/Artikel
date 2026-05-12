@@ -2,56 +2,85 @@
 // src/components/artikel/ArtikelCard.tsx
 
 import Link from 'next/link'
-import Image from 'next/image'
 import type { ArtikelLengkap } from '@/types/database'
-import { formatDate } from '@/lib/utils'
-
-const THUMB_EMOJI: Record<string, string> = {
-  'wisata-alam':          '🌋',
-  'wisata-budaya':        '🎭',
-  'wisata-kuliner':       '🍜',
-  'manajemen-pariwisata': '📊',
-  'ekowisata':            '🌿',
-  'destinasi-digital':    '💻',
-}
+import { Calendar, Tag, ArrowRight } from 'lucide-react'
 
 export function ArtikelCard({ artikel }: { artikel: ArtikelLengkap }) {
-  const katColor  = artikel.kategori_warna ?? '#F08060'
-  const emoji     = THUMB_EMOJI[artikel.kategori_slug ?? ''] ?? '📄'
-  const firstName = artikel.penulis_list?.[0]?.nama?.split(' ')[0] ?? 'Penulis'
-  const initials  = (artikel.penulis_list?.[0]?.nama ?? 'U').slice(0, 2).toUpperCase()
+  const namaKategori = artikel.kategori_nama || 'Pariwisata'
+  const penulisUtama = artikel.penulis_list && artikel.penulis_list.length > 0 
+    ? artikel.penulis_list[0].nama 
+    : 'Anonim'
+  const inisialPenulis = typeof penulisUtama === 'string' 
+    ? penulisUtama.charAt(0).toUpperCase() 
+    : 'A'
 
   return (
-    <Link href={`/artikel/${artikel.slug}`}
-      className="group bg-white border border-[rgba(28,43,43,0.10)] rounded-xl overflow-hidden hover:-translate-y-1.5 hover:shadow-md hover:border-[rgba(28,43,43,0.18)] transition-all duration-300 block">
-      <div className="h-[170px] relative overflow-hidden"
-        style={{ background: `linear-gradient(135deg, ${katColor}18, ${katColor}30)` }}>
-        {artikel.foto_sampul_url ? (
-          <Image src={artikel.foto_sampul_url} alt={artikel.judul} fill
-            className="object-cover group-hover:scale-105 transition-transform duration-500" />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-[44px]">{emoji}</div>
-        )}
-      </div>
-      <div className="p-5">
-        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold mb-2.5"
-          style={{ background: katColor + '22', color: katColor }}>
-          {artikel.kategori_icon} {artikel.kategori_nama ?? 'Umum'}
-        </span>
-        <h3 className="font-display font-semibold text-[17px] text-[var(--ink)] leading-[1.4] mb-3 line-clamp-3 group-hover:text-[var(--coral)] transition-colors">
-          {artikel.judul}
-        </h3>
-        <div className="flex items-center justify-between mt-auto">
-          <div className="flex items-center gap-2 text-[12px] text-[var(--ink-lt)]">
-            <div className="w-[22px] h-[22px] rounded-full flex items-center justify-center text-[9px] font-bold text-white flex-shrink-0"
-              style={{ background: katColor }}>
-              {initials}
-            </div>
-            <span className="font-medium truncate max-w-[110px]">{firstName}</span>
-          </div>
-          <span className="text-[11px] text-[var(--ink-lt)]">
-            {artikel.published_at ? formatDate(artikel.published_at) : ''}
+    <Link 
+      href={`/artikel/${artikel.slug}`} 
+      className="group block relative h-[480px] w-full rounded-[2.5rem] overflow-hidden shadow-xl hover:shadow-[0_20px_50px_rgba(101,83,72,0.25)] transition-all duration-500 hover:-translate-y-3 bg-[#655348]"
+    >
+      {/* Background Image Container */}
+      <div 
+        className="absolute inset-0 w-full h-full bg-cover bg-center transition-transform duration-1000 group-hover:scale-110"
+        style={{ 
+          // PERBAIKAN: Menghapus artikel.cover_image karena tidak ada di schema database
+          backgroundImage: `url(${artikel.foto_sampul_url || 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=800&auto=format&fit=crop'})` 
+        }}
+      />
+      
+      {/* Overlay Gradasi */}
+      <div className="absolute inset-0 bg-gradient-to-t from-[#655348] via-[#655348]/70 to-[#655348]/10 opacity-95 group-hover:opacity-100 transition-opacity duration-500 z-10" />
+
+      {/* Top Badge: Mengambil Kategori dari Database */}
+      <div className="absolute top-6 left-6 z-20">
+        <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#D9D9D9] text-[#655348] shadow-lg">
+          <Tag size={12} className="group-hover:rotate-12 transition-transform" />
+          <span className="text-[10px] font-black uppercase tracking-widest">
+            {namaKategori}
           </span>
+        </div>
+      </div>
+
+      {/* Content Container */}
+      <div className="absolute inset-0 p-8 flex flex-col justify-end z-20">
+        <div className="transition-transform duration-500 ease-out group-hover:-translate-y-2">
+          
+          {/* Judul Artikel */}
+          <h3 className="text-2xl font-black text-white leading-[1.3] mb-4 line-clamp-3 drop-shadow-md">
+            {artikel.judul}
+          </h3>
+          
+          {/* Abstrak */}
+          <p className="text-[#D9D9D9]/90 text-sm line-clamp-2 mb-6 font-medium leading-relaxed">
+            {/* PERBAIKAN: Menggunakan artikel.abstrak sesuai database */}
+            {artikel.abstrak || 'Temukan ulasan mendalam, statistik, dan analisis mengenai isu ini di ruang baca kami.'}
+          </p>
+          
+          {/* Footer: Penulis & Tanggal */}
+          <div className="flex items-center justify-between pt-5 border-t border-[#D9D9D9]/20">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-[#D9D9D9] flex items-center justify-center text-[#655348] font-black text-base border-2 border-transparent group-hover:border-white transition-colors">
+                {inisialPenulis}
+              </div>
+              <div>
+                <div className="text-xs font-bold text-white uppercase tracking-wider mb-1 line-clamp-1">
+                  {penulisUtama}
+                </div>
+                <div className="flex items-center gap-1.5 text-[9px] font-bold text-[#D9D9D9]/70 uppercase tracking-widest">
+                  <Calendar size={10} />
+                  {new Date(artikel.published_at!).toLocaleDateString('id-ID', {
+                    day: '2-digit', month: 'short', year: 'numeric'
+                  })}
+                </div>
+              </div>
+            </div>
+            
+            {/* Aksen Panah */}
+            <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white backdrop-blur-sm group-hover:bg-[#D9D9D9] group-hover:text-[#655348] transition-all duration-300 shrink-0">
+              <ArrowRight size={14} className="-rotate-45 group-hover:rotate-0 transition-transform duration-300" />
+            </div>
+          </div>
+          
         </div>
       </div>
     </Link>

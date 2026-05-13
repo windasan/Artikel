@@ -62,8 +62,8 @@ export function ArtikelFilter({ kategoriList, currentFilters }: Props) {
         Ubah top-[64px] atau md:top-[72px] ini jika dirasa masih ada jarak/tumpang tindih dengan Navbar. 
         Angka ini harus persis mewakili tinggi Navbar Anda saat menyusut.
       */}
-      <div className="sticky top-[64px] md:top-[64px] z-40 bg-white/90 backdrop-blur-2xl border-b border-[#D9D9D9]/50 shadow-[0_4px_30px_rgba(101,83,72,0.05)] transition-all">
-        <div className="max-w-[1400px] mx-auto px-6 py-4">
+      <div className="sticky top-[64px] md:top-[64px] z-30 bg-white/90 backdrop-blur-2xl border-b border-[#D9D9D9]/50 shadow-[0_4px_30px_rgba(101,83,72,0.05)] transition-all">   
+     <div className="max-w-[1400px] mx-auto px-6 py-4">
 
           {/* 1. TAMPILAN MOBILE: Search Bar & Tombol Toggle Filter */}
           <div className="flex md:hidden items-center gap-3 w-full">

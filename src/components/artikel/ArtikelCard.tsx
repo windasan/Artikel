@@ -1,86 +1,65 @@
-'use client'
-// src/components/artikel/ArtikelCard.tsx
-
+import Image from 'next/image'
 import Link from 'next/link'
+import { Calendar, ArrowRight } from 'lucide-react'
 import type { ArtikelLengkap } from '@/types/database'
-import { Calendar, Tag, ArrowRight } from 'lucide-react'
 
 export function ArtikelCard({ artikel }: { artikel: ArtikelLengkap }) {
-  const namaKategori = artikel.kategori_nama || 'Pariwisata'
-  const penulisUtama = artikel.penulis_list && artikel.penulis_list.length > 0 
-    ? artikel.penulis_list[0].nama 
-    : 'Anonim'
-  const inisialPenulis = typeof penulisUtama === 'string' 
-    ? penulisUtama.charAt(0).toUpperCase() 
-    : 'A'
-
   return (
-    <Link 
-      href={`/artikel/${artikel.slug}`} 
-      className="group block relative h-[480px] w-full rounded-[2.5rem] overflow-hidden shadow-xl hover:shadow-[0_20px_50px_rgba(101,83,72,0.25)] transition-all duration-500 hover:-translate-y-3 bg-[#655348]"
-    >
-      {/* Background Image Container */}
-      <div 
-        className="absolute inset-0 w-full h-full bg-cover bg-center transition-transform duration-1000 group-hover:scale-110"
-        style={{ 
-          // PERBAIKAN: Menghapus artikel.cover_image karena tidak ada di schema database
-          backgroundImage: `url(${artikel.foto_sampul_url || 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=800&auto=format&fit=crop'})` 
-        }}
-      />
-      
-      {/* Overlay Gradasi */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#655348] via-[#655348]/70 to-[#655348]/10 opacity-95 group-hover:opacity-100 transition-opacity duration-500 z-10" />
-
-      {/* Top Badge: Mengambil Kategori dari Database */}
-      <div className="absolute top-6 left-6 z-20">
-        <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#D9D9D9] text-[#655348] shadow-lg">
-          <Tag size={12} className="group-hover:rotate-12 transition-transform" />
-          <span className="text-[10px] font-black uppercase tracking-widest">
-            {namaKategori}
-          </span>
+    <Link href={`/artikel/${artikel.slug}`} className="group block h-full w-[300px] md:w-[380px] shrink-0">
+      <div className="flex flex-col bg-white rounded-[2rem] overflow-hidden hover:shadow-2xl transition-all duration-500 h-full shadow-sm border border-gray-100">
+        
+        {/* Gambar */}
+        <div className="relative w-full h-56 md:h-64 overflow-hidden bg-gray-50">
+          <Image 
+            src={artikel.foto_sampul_url || '/Images/BGTM.jpeg'} 
+            alt={artikel.judul} 
+            fill 
+            className="object-cover transition-transform duration-700 group-hover:scale-105"
+          />
+          {/* Overlay shadow tipis saat dihover */}
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500" />
         </div>
-      </div>
 
-      {/* Content Container */}
-      <div className="absolute inset-0 p-8 flex flex-col justify-end z-20">
-        <div className="transition-transform duration-500 ease-out group-hover:-translate-y-2">
-          
-          {/* Judul Artikel */}
-          <h3 className="text-2xl font-black text-white leading-[1.3] mb-4 line-clamp-3 drop-shadow-md">
-            {artikel.judul}
-          </h3>
-          
-          {/* Abstrak */}
-          <p className="text-[#D9D9D9]/90 text-sm line-clamp-2 mb-6 font-medium leading-relaxed">
-            {/* PERBAIKAN: Menggunakan artikel.abstrak sesuai database */}
-            {artikel.abstrak || 'Temukan ulasan mendalam, statistik, dan analisis mengenai isu ini di ruang baca kami.'}
-          </p>
-          
-          {/* Footer: Penulis & Tanggal */}
-          <div className="flex items-center justify-between pt-5 border-t border-[#D9D9D9]/20">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[#D9D9D9] flex items-center justify-center text-[#655348] font-black text-base border-2 border-transparent group-hover:border-white transition-colors">
-                {inisialPenulis}
-              </div>
-              <div>
-                <div className="text-xs font-bold text-white uppercase tracking-wider mb-1 line-clamp-1">
-                  {penulisUtama}
-                </div>
-                <div className="flex items-center gap-1.5 text-[9px] font-bold text-[#D9D9D9]/70 uppercase tracking-widest">
-                  <Calendar size={10} />
-                  {new Date(artikel.published_at!).toLocaleDateString('id-ID', {
-                    day: '2-digit', month: 'short', year: 'numeric'
-                  })}
-                </div>
-              </div>
+        {/* Konten */}
+        <div className="p-6 md:p-8 flex flex-col flex-1 justify-between bg-white">
+          <div>
+            {/* Top Info: Kategori & Tanggal */}
+            <div className="flex items-center justify-between mb-4">
+              <span className="inline-block px-3 py-1 bg-red-50 text-[#FF6B6B] text-[10px] font-black rounded-md uppercase tracking-[0.1em]">
+                {artikel.kategori_nama || 'Pariwisata'}
+              </span>
+              <span className="text-gray-400 text-[11px] font-medium flex items-center gap-1.5">
+                <Calendar size={12} />
+                {new Date(artikel.published_at!).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+              </span>
             </div>
             
-            {/* Aksen Panah */}
-            <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white backdrop-blur-sm group-hover:bg-[#D9D9D9] group-hover:text-[#655348] transition-all duration-300 shrink-0">
-              <ArrowRight size={14} className="-rotate-45 group-hover:rotate-0 transition-transform duration-300" />
+            {/* Judul & Abstrak */}
+            <h3 className="text-xl font-black text-gray-900 group-hover:text-[#655348] transition-colors mb-3 line-clamp-2 leading-snug">
+              {artikel.judul}
+            </h3>
+            <p className="text-gray-500 text-sm line-clamp-2 leading-relaxed">
+              {artikel.abstrak || 'Jelajahi analisis mendalam tentang topik ini di ruang baca kami.'}
+            </p>
+          </div>
+
+          {/* Footer Card: Penulis & Tombol Baca */}
+          <div className="flex items-center justify-between pt-6 mt-4 border-t border-gray-50">
+            <div className="flex items-center gap-3">
+              {/* Avatar Initial Penulis */}
+              <div className="w-8 h-8 rounded-full bg-[#655348]/10 flex items-center justify-center text-[#655348] font-black text-xs">
+                {artikel.penulis_list?.[0]?.nama?.charAt(0).toUpperCase() || 'A'}
+              </div>
+              <span className="text-xs font-bold text-gray-700 max-w-[120px] truncate">
+                {artikel.penulis_list?.[0]?.nama || 'Admin'}
+              </span>
+            </div>
+            
+            {/* Ikon Panah Kanan Bulat */}
+            <div className="w-8 h-8 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center group-hover:bg-[#655348] transition-colors duration-300">
+              <ArrowRight size={14} className="text-gray-400 group-hover:text-white transform group-hover:translate-x-0.5 transition-all" />
             </div>
           </div>
-          
         </div>
       </div>
     </Link>

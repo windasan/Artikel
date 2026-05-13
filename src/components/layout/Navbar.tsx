@@ -10,6 +10,8 @@ import {
   PenLine, LogIn, LogOut, User, ChevronDown, 
   Menu, X, LayoutDashboard, Compass, BookOpen, Users, Info
 } from 'lucide-react'
+import { HeroSearch } from '@/components/home/HeroSearch'
+
 
 export function Navbar() {
   const pathname = usePathname()
@@ -84,10 +86,10 @@ export function Navbar() {
   return (
     <>
       <nav 
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 font-sans ${
-          scrolled
-            ? 'bg-white/90 backdrop-blur-xl border-b border-[#655348]/10 shadow-[0_4px_30px_rgba(101,83,72,0.05)] py-3'
-            : 'bg-transparent py-5'
+        className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 font-sans ${ // Ubah z-50 ke z-[100]
+        scrolled
+          ? 'bg-white/90 backdrop-blur-xl border-b border-[#655348]/10 shadow-[0_4px_30px_rgba(101,83,72,0.05)] py-3'
+          : 'bg-transparent py-5'
         }`}
       >
         <div className="max-w-[1400px] mx-auto px-6 md:px-10 flex items-center justify-between">
@@ -97,9 +99,10 @@ export function Navbar() {
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
             </div>
             <span className={`text-xl font-black tracking-tighter uppercase transition-colors duration-300 ${scrolled ? 'text-[#655348]' : 'text-white'}`}>
-              Pariwisata <span className={scrolled ? 'text-[#655348]/50' : 'text-[#D9D9D9]'}>A 23</span>
+              Pariwisata <span className={scrolled ? 'text-[#655348]/50' : 'text-[#D9D9D9]'}>A UNY 23</span>
             </span>
           </Link>
+    <HeroSearch />
 
           <div className="hidden lg:flex items-center gap-8">
             <div className={`flex items-center gap-8 px-8 py-2.5 rounded-full transition-all duration-300 ${scrolled ? 'bg-[#655348]/5' : 'bg-white/10 backdrop-blur-md border border-white/20'}`}>
@@ -115,7 +118,7 @@ export function Navbar() {
                         : (isActive ? 'text-white' : 'text-[#D9D9D9] hover:text-white')
                     }`}
                   >
-                    <span className="opacity-0 group-hover:opacity-100 transition-opacity -ml-6 group-hover:ml-0 absolute -left-6">{link.icon}</span>
+                    <span className="opacity-0 group-hover:opacity-100 transition-opacity -ml-6 group-hover:ml-0 absolute -left-">{link.icon}</span>
                     <span className="group-hover:translate-x-6 transition-transform duration-300 inline-block">{link.label}</span>
                     {isActive && (
                       <span className={`absolute -bottom-2 left-0 w-full h-[2px] rounded-full ${scrolled ? 'bg-[#655348]' : 'bg-white'}`} />
@@ -202,8 +205,8 @@ export function Navbar() {
         </div>
       </nav>
 
-      <div className={`fixed inset-0 bg-[#D9D9D9]/80 backdrop-blur-lg z-40 lg:hidden transition-all duration-500 ${
-        menuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
+      <div className={`fixed inset-0 bg-[#D9D9D9]/80 backdrop-blur-lg z-[90] lg:hidden transition-all duration-500 ${ // Ubah z-40 ke z-[90]
+       menuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
       }`}>
         <div className={`absolute top-0 right-0 w-[85%] sm:w-[350px] h-full bg-white shadow-2xl flex flex-col justify-between p-8 transition-transform duration-500 delay-100 ${
           menuOpen ? 'translate-x-0' : 'translate-x-full'

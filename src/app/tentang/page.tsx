@@ -1,77 +1,104 @@
-// src/app/tentang/page.tsx
+import Image from 'next/image'
+import { Target, Eye, Users, ShieldCheck, MapPin, Globe } from 'lucide-react'
+
 export default function TentangPage() {
-  const values = [
-    { icon:'🔬', title:'Rigor Akademik',    desc:'Setiap artikel melewati proses peer review internal sebelum dipublikasikan.' },
-    { icon:'🌐', title:'Open Access Penuh', desc:'Seluruh artikel dapat diakses gratis oleh publik, mendukung ekosistem ilmu terbuka.' },
-    { icon:'🤝', title:'Kolaborasi Tim',    desc:'Platform mendorong riset berkelompok yang mencerminkan praktik profesional industri.' },
-    { icon:'📊', title:'Berbasis Data',     desc:'Setiap klaim didukung data yang dapat ditelusuri dan diverifikasi.' },
-  ]
-  const team = [
-    { inisial:'RS', nama:'Rafi Santoso',     nim:'21812141001', role:'Chief Editor',   bg:'var(--coral)' },
-    { inisial:'DP', nama:'Dian Permata',     nim:'21812141002', role:'Web Admin',      bg:'var(--sky)' },
-    { inisial:'MF', nama:'Muhammad Faisal',  nim:'21812141004', role:'Reviewer',       bg:'var(--gold)' },
-    { inisial:'SR', nama:'Siti Rahma',       nim:'21812141005', role:'Editor',         bg:'var(--sage)' },
-  ]
   return (
-    <>
-      <div className="pt-[100px] pb-16 px-6 text-center bg-gradient-to-b from-[var(--cream)] to-[var(--paper)]">
-        <span className="text-[11px] font-bold tracking-[2px] uppercase text-[var(--coral)] block mb-3">Platform</span>
-        <h1 className="font-display text-[52px] font-bold text-[var(--ink)] tracking-tight mb-4">Tentang Jurnal Pariwisata</h1>
-        <p className="text-[16px] text-[var(--ink-lt)] max-w-[520px] mx-auto leading-[1.75]">
-          Ruang publikasi kolaboratif mahasiswa Pariwisata Kelas A UNY — menggabungkan rigor akademik dengan narasi humanis.
-        </p>
-      </div>
-      <div className="max-w-[1080px] mx-auto px-6 py-16 grid grid-cols-1 lg:grid-cols-2 gap-16 mb-8">
-        <div>
-          <h2 className="font-display text-[28px] font-bold text-[var(--ink)] mb-5 tracking-tight">Mengapa Platform Ini Ada</h2>
-          <p className="text-[14px] text-[var(--ink-lt)] leading-[1.8] mb-4">
-            Kami percaya bahwa karya akademik mahasiswa layak mendapat ruang publikasi yang setara dengan jurnal ilmiah profesional. Mahasiswa adalah peneliti muda yang pandangannya segar, relevan, dan bernilai tinggi bagi perkembangan ilmu pariwisata.
-          </p>
-          <p className="text-[14px] text-[var(--ink-lt)] leading-[1.8]">
-            Portal ini lahir dari kebutuhan konkret: menyediakan medium publikasi yang tidak hanya dapat diakses bebas oleh publik, tetapi juga mampu merepresentasikan kualitas riset mahasiswa secara adil dan terhormat.
+    <main className="min-h-screen bg-white">
+      {/* 1. HERO SECTION */}
+      <section className="bg-[#655348] pt-40 pb-24 px-6 relative overflow-hidden text-center text-white">
+        <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] pointer-events-none" />
+        <div className="relative z-10 max-w-4xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-6 py-2 rounded-full border border-white/20 bg-white/10 backdrop-blur-md text-[12px] font-black tracking-[0.4em] uppercase mb-8">
+            Manifesto
+          </div>
+          <h1 className="text-4xl md:text-7xl font-black uppercase tracking-tighter mb-6 leading-tight">
+            Ruang Jelajah <br /> <span className="text-[#D9D9D9]">Pariwisata</span>
+          </h1>
+          <p className="text-[#D9D9D9] text-lg md:text-xl font-medium italic max-w-2xl mx-auto leading-relaxed">
+            "Lebih dari sekadar jurnal; ini adalah wadah intelektual mahasiswa Pariwisata Kelas A UNY dalam merespon dinamika industri global."
           </p>
         </div>
-        <div className="flex flex-col gap-3">
-          {values.map(v => (
-            <div key={v.title} className="flex gap-4 p-4 bg-white border border-[rgba(28,43,43,0.10)] rounded-xl hover:border-[var(--coral)] transition-colors">
-              <span className="text-[22px] flex-shrink-0">{v.icon}</span>
-              <div>
-                <p className="font-semibold text-[var(--ink)] text-[14px] mb-0.5">{v.title}</p>
-                <p className="text-[13px] text-[var(--ink-lt)] leading-[1.55]">{v.desc}</p>
+      </section>
+
+      {/* 2. VISI & MISI */}
+      <section className="max-w-7xl mx-auto px-6 py-24">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+          {/* Visi */}
+          <div className="p-10 rounded-[3rem] bg-[#FDFBF7] border border-gray-100 flex flex-col items-center text-center">
+            <div className="w-16 h-16 bg-[#655348] text-white rounded-2xl flex items-center justify-center mb-8 shadow-lg">
+              <Eye size={32} />
+            </div>
+            <h2 className="text-3xl font-black text-[#655348] uppercase tracking-tighter mb-6">Visi Kami</h2>
+            <p className="text-gray-600 leading-relaxed font-medium italic">
+              Menjadi platform publikasi digital terkemuka yang mengintegrasikan pemikiran kritis mahasiswa dengan tren pariwisata berkelanjutan di Indonesia.
+            </p>
+          </div>
+
+          {/* Misi */}
+          <div className="p-10 rounded-[3rem] bg-[#655348] text-white flex flex-col items-center text-center shadow-2xl">
+            <div className="w-16 h-16 bg-[#D9D9D9] text-[#655348] rounded-2xl flex items-center justify-center mb-8 shadow-lg">
+              <Target size={32} />
+            </div>
+            <h2 className="text-3xl font-black text-[#D9D9D9] uppercase tracking-tighter mb-6">Misi Kami</h2>
+            <p className="text-[#D9D9D9]/80 leading-relaxed font-medium italic">
+              Mendorong literasi riset, memfasilitasi kolaborasi antar mahasiswa, dan menyediakan referensi edukatif yang relevan bagi akademisi maupun praktisi pariwisata.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* 3. CORE VALUES (NILAI UTAMA) */}
+      {/* <section className="bg-gray-50 py-24 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-black text-[#655348] uppercase tracking-tighter">Nilai Perjuangan</h2>
+            <div className="w-24 h-1 bg-[#655348] mx-auto mt-4 rounded-full" />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              { icon: <ShieldCheck />, title: "Integritas", desc: "Menjunjung tinggi orisinalitas dalam setiap karya tulis." },
+              { icon: <Users />, title: "Kolaborasi", desc: "Sinergi antar mahasiswa Pariwisata Kelas A UNY." },
+              { icon: <Globe />, title: "Keberlanjutan", desc: "Fokus pada isu pariwisata ramah lingkungan." },
+              { icon: <MapPin />, title: "Lokalitas", desc: "Mengangkat potensi wisata nusantara ke mata dunia." }
+            ].map((value, idx) => (
+              <div key={idx} className="bg-white p-8 rounded-[2rem] shadow-sm hover:shadow-xl transition-all duration-500 text-center">
+                <div className="w-12 h-12 mx-auto bg-[#655348]/5 text-[#655348] rounded-xl flex items-center justify-center mb-6">
+                  {value.icon}
+                </div>
+                <h3 className="font-black text-gray-900 uppercase tracking-widest text-sm mb-3">{value.title}</h3>
+                <p className="text-gray-500 text-xs leading-relaxed italic">{value.desc}</p>
               </div>
+            ))}
+          </div>
+        </div>
+      </section> */}
+
+      {/* 4. TEAM IDENTITAS */}
+      <section className="max-w-5xl mx-auto px-6 py-24 text-center">
+        <h2 className="text-3xl md:text-5xl font-black text-[#1A1A1A] tracking-tighter uppercase mb-12">
+          Dikelola Oleh <span className="text-[#655348]">Kelas A</span>
+        </h2>
+        
+        <div className="relative rounded-[3rem] overflow-hidden aspect-video shadow-2xl mb-12">
+          {/* Ganti dengan foto kelas jika ada */}
+          <Image 
+            src="/Images/BGTM.jpeg" 
+            alt="Pariwisata Kelas A UNY" 
+            fill 
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-[#655348]/40 flex items-center justify-center">
+            <div className="p-8 border-4 border-white/30 rounded-[2rem] backdrop-blur-sm">
+              <p className="text-white text-2xl font-black uppercase tracking-[0.5em]">Tourism UNY '23</p>
             </div>
-          ))}
+          </div>
         </div>
-      </div>
-      <div className="max-w-[1080px] mx-auto px-6 pb-16">
-        <div className="text-center mb-8">
-          <span className="text-[11px] font-bold tracking-[2px] uppercase text-[var(--coral)] block mb-2">Tim</span>
-          <h2 className="font-display text-[32px] font-bold text-[var(--ink)] tracking-tight">Pengelola Platform</h2>
-        </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {team.map(m => (
-            <div key={m.nim} className="bg-white border border-[rgba(28,43,43,0.10)] rounded-xl p-5 text-center hover:border-[var(--coral)] hover:-translate-y-1 transition-all">
-              <div className="w-16 h-16 rounded-full mx-auto mb-3 flex items-center justify-center text-[22px] font-bold text-white" style={{ background: m.bg }}>{m.inisial}</div>
-              <p className="font-semibold text-[var(--ink)] text-[14px]">{m.nama}</p>
-              <p className="text-[11px] text-[var(--ink-lt)] mb-2">{m.nim}</p>
-              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[var(--sage-lt)] text-[#3D7050]">{m.role}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="bg-gradient-to-br from-[#1C2B2B] to-[#2A3F3F] py-14 px-6 text-center">
-        <div className="w-[68px] h-[68px] rounded-full bg-white/90 mx-auto mb-5 flex items-center justify-center text-3xl shadow-xl">🏫</div>
-        <p className="text-[17px] font-semibold text-white/90 mb-1.5">Kementerian Pendidikan Tinggi, Sains, dan Teknologi RI</p>
-        <p className="text-[13px] text-white/45 mb-6">Universitas Negeri Yogyakarta · Prodi Pariwisata · Kelas A</p>
-        <div className="flex gap-3 justify-center flex-wrap">
-          {['🔬 BRIN','💰 LPDP','🎓 UNY','📚 FISIPOL'].map(p => (
-            <div key={p} className="px-5 py-2 rounded-full bg-white/10 border border-white/15 text-white/80 text-[13px] font-semibold">{p}</div>
-          ))}
-        </div>
-        <p className="text-[11px] text-white/25 border-t border-white/8 pt-5 mt-6">
-          Hak Cipta © 2025 Program Studi Pariwisata Kelas A, Universitas Negeri Yogyakarta
+
+        <p className="text-gray-600 text-lg leading-relaxed max-w-3xl mx-auto italic">
+          "Ruang Jelajah Pariwisata adalah bukti nyata kolektifitas kami. Kami percaya bahwa pemikiran yang dibagikan adalah langkah awal dari perubahan industri pariwisata yang lebih baik."
         </p>
-      </div>
-    </>
+      </section>
+    </main>
   )
 }

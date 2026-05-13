@@ -1,89 +1,91 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { Search, X } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useState, useRef, useEffect } from 'react'
 
 export function HeroSearch() {
   const [query, setQuery] = useState('')
-  const [isFocused, setIsFocused] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
 
-  // Handle submit pencarian
+  // Fokuskan input otomatis saat kolom terbuka
+  useEffect(() => {
+    if (isExpanded && inputRef.current) {
+      inputRef.current.focus()
+    }
+  }, [isExpanded])
+
+  const handleToggle = (e: React.MouseEvent) => {
+    // Jika kolom tertutup, buka kolom
+    if (!isExpanded) {
+      e.preventDefault()
+      setIsExpanded(true)
+    } 
+    // Jika kolom terbuka tapi input kosong, tutup kembali
+    else if (isExpanded && !query.trim()) {
+      setIsExpanded(false)
+    }
+  }
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     if (query.trim()) {
-      // PERBAIKAN: Gunakan parameter 'q=' agar dikenali oleh ArtikelFilter
       router.push(`/artikel?q=${encodeURIComponent(query.trim())}`)
     }
   }
 
-  // Handle hapus teks
-  const handleClear = () => {
-    setQuery('')
-    inputRef.current?.focus()
-  }
-
-  // Efek keyboard shortcut
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === '/' && document.activeElement !== inputRef.current) {
-        e.preventDefault()
-        inputRef.current?.focus()
-      }
-    }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [])
-
   return (
-    <form 
-      onSubmit={handleSearch} 
-      className={`relative w-full group transition-all duration-500 rounded-[2.5rem] ${
-        isFocused ? 'scale-[1.02] shadow-[0_0_40px_rgba(217,217,217,0.15)]' : 'shadow-2xl'
-      }`}
-    >
-      <div className={`absolute inset-0 bg-gradient-to-r from-[#D9D9D9]/0 via-[#D9D9D9]/10 to-[#D9D9D9]/0 rounded-[2.5rem] transition-opacity duration-500 pointer-events-none ${
-        isFocused ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-      }`} />
-
-      <input
-        ref={inputRef}
-        type="text"
-        placeholder="Ketik judul, topik, atau kata kunci (Tekan '/' untuk fokus)..."
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
-        className="w-full pl-8 pr-24 py-5 md:py-6 rounded-[2.5rem] bg-white/5 backdrop-blur-2xl border-2 border-white/20 text-white placeholder:text-white/50 focus:outline-none focus:bg-white/10 focus:border-[#D9D9D9]/60 transition-all duration-300 text-base md:text-lg font-medium"
-      />
-
-      <div className={`absolute right-[72px] top-1/2 -translate-y-1/2 transition-all duration-300 ${
-        query.length > 0 ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-50 invisible'
-      }`}>
-        <button
-          type="button"
-          onClick={handleClear}
-          className="p-2 rounded-full text-white/50 hover:text-white hover:bg-white/10 transition-colors"
-          aria-label="Hapus teks"
-        >
-          <X size={18} strokeWidth={3} />
-        </button>
-      </div>
-
-      <button 
-        type="submit"
-        disabled={!query.trim()}
-        className={`absolute right-3 top-1/2 -translate-y-1/2 p-3.5 md:p-4 rounded-full flex items-center justify-center transition-all duration-300 ${
-          query.trim() 
-            ? 'bg-[#D9D9D9] text-[#655348] hover:bg-white hover:scale-110 hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] cursor-pointer' 
-            : 'bg-white/20 text-white/50 cursor-not-allowed'
+    <div className="relative flex items-center h-12">
+      <form 
+        onSubmit={handleSearch}
+        className={`relative flex items-center h-12 transition-all duration-500 ease-in-out ${
+          isExpanded ? 'w-full max-w-sm' : 'w-12'
         }`}
-        aria-label="Cari Artikel"
       >
-        <Search size={22} strokeWidth={2.5} className={query.trim() && isFocused ? 'animate-pulse' : ''} />
-      </button>
-    </form>
+        {/* Input Field */}
+        <input
+          ref={inputRef}
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Cari artikel..."
+          className={`w-full h-full pl-12 pr-4 rounded-full bg-white border border-gray-100 shadow-sm outline-none text-sm font-medium transition-all duration-300 ${
+            isExpanded ? 'opacity-100' : 'opacity-0 pointer-events-none'
+          }`}
+        />
+
+        {/* Search Button (Klik untuk buka/cari) */}
+        <button
+          type={isExpanded && query.trim() ? "submit" : "button"}
+          onClick={handleToggle}
+          className="absolute left-0 top-0 w-12 h-12 flex items-center justify-center bg-[#655348] text-white rounded-full shadow-lg hover:bg-[#1A1A1A] transition-colors z-20"
+        >
+          <Search size={18} strokeWidth={2.5} />
+        </button>
+
+        {/* Tombol Close (X) - Muncul hanya saat expanded */}
+        {isExpanded && (
+          <button
+            type="button"
+            onClick={() => {
+              setIsExpanded(false)
+              setQuery('')
+            }}
+            className="absolute right-4 text-gray-400 hover:text-[#655348] transition-colors z-30"
+          >
+            <X size={16} />
+          </button>
+        )}
+      </form>
+
+      {/* Label "Cari" - Muncul hanya saat tertutup */}
+      {!isExpanded && (
+        <span className="absolute left-14 whitespace-nowrap text-[10px] font-black tracking-widest text-[#655348]/40 uppercase pointer-events-none transition-opacity">
+          Cari
+        </span>
+      )}
+    </div>
   )
 }

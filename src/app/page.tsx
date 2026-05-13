@@ -25,6 +25,9 @@ import {
   Tag
 } from 'lucide-react'
 import type { ArtikelLengkap } from '@/types/database' // Pastikan path ini sesuai
+import BGTM from '@/Images/BGTM.jpeg'; // Menggunakan alias @ yang mengarah ke folder src
+
+
 
 // Konfigurasi revalidasi untuk Incremental Static Regeneration (ISR)
 export const revalidate = 60 
@@ -89,35 +92,36 @@ export default async function HomePage() {
       <section 
         className="relative min-h-[95vh] flex flex-col items-center justify-center text-center px-6 pt-32 pb-20 overflow-hidden"
         style={{
-          backgroundImage: 'url("https://images.trvl-media.com/place/6106384/80667e0d-94b4-4401-8104-b447db482014.jpg")',
+          backgroundImage: `url(${BGTM.src})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundAttachment: 'fixed',
         }}
       >
-        {/* Overlay Gradasi Warna Utama #655348 */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#655348]/95 via-[#655348]/70 to-[#655348]/95 z-0" />
+      {/* Overlay Lebih Halus dan Tipis */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/45 to-[#655348]/95 z-0" />
 
-        <div className="relative z-10 max-w-[1000px] w-full mx-auto flex flex-col items-center text-[#D9D9D9]">
+        {/* Container Teks */}
+        <div className="relative z-10 max-w-[1000px] w-full mx-auto flex flex-col items-center text-[#EDEDED]">
           
-          <div className="inline-flex items-center gap-2 px-6 py-2 rounded-full border border-[#D9D9D9]/20 bg-[#D9D9D9]/10 backdrop-blur-md text-[10px] md:text-[12px] font-black tracking-[0.4em] uppercase mb-10 shadow-2xl">
+          {/* <div className="inline-flex items-center gap-2 px-6 py-2 rounded-full border border-[#D9D9D9]/20 bg-[#D9D9D9]/10 backdrop-blur-md text-[10px] md:text-[12px] font-black tracking-[0.4em] uppercase mb-10 shadow-2xl">
             Jurnal Pariwisata Terpadu
-          </div>
+          </div> */}
 
-          <h1 className="font-display font-black text-white leading-[1.05] tracking-tighter mb-8 drop-shadow-2xl"
+          <h1 className="font-display font-black text-white leading-[1.05] tracking-tighter mb-8 drop-shadow-2xl pt-8"
             style={{ fontSize: 'clamp(42px, 8vw, 90px)' }}>
-            Ruang Jelajah<br/>Pariwisata
+            Ruang Jelajah Pariwisata
           </h1>
 
-          <div className="relative max-w-3xl mx-auto mb-14">
-            <p className="text-[18px] md:text-[24px] font-medium leading-relaxed italic drop-shadow-md text-[#D9D9D9] px-4">
+          <div className="relative max-w-5xl mx-auto mb-14">
+            <p className="text-[18px] md:text-[24px] font-medium leading-relaxed  drop-shadow-md text-[#D9D9D9] px-4">
               "Ketimpangan lama tinggal wisatawan pada hotel berbintang menurut kelas di Bali dan NTB tidak terjadi secara kebetulan"
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center gap-6 mb-20 w-full justify-center">
             <Link href="/artikel"
-              className="group flex items-center justify-center gap-3 px-12 py-4 rounded-full bg-[#D9D9D9] text-[#655348] text-[15px] font-black uppercase tracking-widest hover:bg-white hover:scale-105 transition-all duration-300 shadow-[0_15px_40px_rgba(217,217,217,0.2)]">
+              className="group flex items-center justify-center gap-3 px-12 py-4 rounded-full bg-[#D9D9D9] text-[#454240] text-[15px] font-black uppercase tracking-widest hover:bg-white hover:scale-105 transition-all duration-300 shadow-[0_15px_40px_rgba(217,217,217,0.2)]">
               Mulai Eksplorasi
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
@@ -136,61 +140,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ─────────────────────────────────────────────────────────────────────────
-          SECTION 2: STATISTIK (VISUALISASI DATA)
-          ───────────────────────────────────────────────────────────────────────── */}
-      <section className="py-28 px-6 bg-gradient-to-b from-[#655348] to-[#55463d] relative border-y border-white/5">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            
-            {/* Stat Item */}
-            <div className="group bg-white/5 backdrop-blur-sm border border-white/10 p-10 rounded-[2.5rem] text-center hover:bg-white/10 hover:-translate-y-2 transition-all duration-500 shadow-xl">
-              <div className="mx-auto w-14 h-14 mb-6 rounded-2xl bg-[#D9D9D9]/10 flex items-center justify-center text-[#D9D9D9]">
-                <FileText size={26} />
-              </div>
-              <div className="text-5xl font-black text-white mb-3 tracking-tighter drop-shadow-md">
-                {stats.artikel}
-              </div>
-              <div className="text-[#D9D9D9]/70 text-[11px] font-black uppercase tracking-[0.2em]">Total Artikel</div>
-            </div>
-            
-            {/* Stat Item */}
-            <div className="group bg-white/5 backdrop-blur-sm border border-white/10 p-10 rounded-[2.5rem] text-center hover:bg-white/10 hover:-translate-y-2 transition-all duration-500 shadow-xl">
-              <div className="mx-auto w-14 h-14 mb-6 rounded-2xl bg-[#D9D9D9]/10 flex items-center justify-center text-[#D9D9D9]">
-                <Users size={26} />
-              </div>
-              <div className="text-5xl font-black text-white mb-3 tracking-tighter drop-shadow-md">
-                {stats.penulis}
-              </div>
-              <div className="text-[#D9D9D9]/70 text-[11px] font-black uppercase tracking-[0.2em]">Penulis Aktif</div>
-            </div>
-
-            {/* Stat Item */}
-            <div className="group bg-white/5 backdrop-blur-sm border border-white/10 p-10 rounded-[2.5rem] text-center hover:bg-white/10 hover:-translate-y-2 transition-all duration-500 shadow-xl">
-              <div className="mx-auto w-14 h-14 mb-6 rounded-2xl bg-[#D9D9D9]/10 flex items-center justify-center text-[#D9D9D9]">
-                <Layers size={26} />
-              </div>
-              <div className="text-5xl font-black text-white mb-3 tracking-tighter drop-shadow-md">
-                {stats.kelompok}
-              </div>
-              <div className="text-[#D9D9D9]/70 text-[11px] font-black uppercase tracking-[0.2em]">Kelompok Riset</div>
-            </div>
-
-            {/* Stat Item */}
-            <div className="group bg-white/5 backdrop-blur-sm border border-white/10 p-10 rounded-[2.5rem] text-center hover:bg-white/10 hover:-translate-y-2 transition-all duration-500 shadow-xl">
-              <div className="mx-auto w-14 h-14 mb-6 rounded-2xl bg-[#D9D9D9]/10 flex items-center justify-center text-[#D9D9D9]">
-                <Hash size={26} />
-              </div>
-              <div className="text-5xl font-black text-white mb-3 tracking-tighter drop-shadow-md">
-                {stats.kategori}
-              </div>
-              <div className="text-[#D9D9D9]/70 text-[11px] font-black uppercase tracking-[0.2em]">Kategori Topik</div>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
+   
       {/* ─────────────────────────────────────────────────────────────────────────
           SECTION 3: ARTIKEL TERBARU (FIXED UI & BINDING DATABASE)
           ───────────────────────────────────────────────────────────────────────── */}
@@ -248,7 +198,7 @@ export default async function HomePage() {
                   />
                   
                   {/* Overlay Gradasi - Disesuaikan agar lebih pekat di bawah */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#655348] via-[#655348]/70 to-[#655348]/10 opacity-95 z-10" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#27201c] via-[#655348]/70 to-[#655348]/10 opacity-95 z-10" />
 
                   {/* Top Badge: Mengambil Kategori dari Database */}
                   <div className="absolute top-8 left-8 z-20">
@@ -317,6 +267,62 @@ export default async function HomePage() {
           </div>
         )}
       </section>
+
+         {/* ─────────────────────────────────────────────────────────────────────────
+          SECTION 2: STATISTIK (VISUALISASI DATA)
+          ───────────────────────────────────────────────────────────────────────── */}
+      <section className="py-28 px-6 bg-gradient-to-b from-[#655348] to-[#55463d] relative border-y border-white/5">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            
+            {/* Stat Item */}
+            <div className="group bg-white/5 backdrop-blur-sm border border-white/10 p-10 rounded-[2.5rem] text-center hover:bg-white/10 hover:-translate-y-2 transition-all duration-500 shadow-xl">
+              <div className="mx-auto w-14 h-14 mb-6 rounded-2xl bg-[#D9D9D9]/10 flex items-center justify-center text-[#D9D9D9]">
+                <FileText size={26} />
+              </div>
+              <div className="text-5xl font-black text-white mb-3 tracking-tighter drop-shadow-md">
+                {stats.artikel}
+              </div>
+              <div className="text-[#D9D9D9]/70 text-[11px] font-black uppercase tracking-[0.2em]">Total Artikel</div>
+            </div>
+            
+            {/* Stat Item */}
+            <div className="group bg-white/5 backdrop-blur-sm border border-white/10 p-10 rounded-[2.5rem] text-center hover:bg-white/10 hover:-translate-y-2 transition-all duration-500 shadow-xl">
+              <div className="mx-auto w-14 h-14 mb-6 rounded-2xl bg-[#D9D9D9]/10 flex items-center justify-center text-[#D9D9D9]">
+                <Users size={26} />
+              </div>
+              <div className="text-5xl font-black text-white mb-3 tracking-tighter drop-shadow-md">
+                {stats.penulis}
+              </div>
+              <div className="text-[#D9D9D9]/70 text-[11px] font-black uppercase tracking-[0.2em]">Penulis Aktif</div>
+            </div>
+
+            {/* Stat Item */}
+            <div className="group bg-white/5 backdrop-blur-sm border border-white/10 p-10 rounded-[2.5rem] text-center hover:bg-white/10 hover:-translate-y-2 transition-all duration-500 shadow-xl">
+              <div className="mx-auto w-14 h-14 mb-6 rounded-2xl bg-[#D9D9D9]/10 flex items-center justify-center text-[#D9D9D9]">
+                <Layers size={26} />
+              </div>
+              <div className="text-5xl font-black text-white mb-3 tracking-tighter drop-shadow-md">
+                {stats.kelompok}
+              </div>
+              <div className="text-[#D9D9D9]/70 text-[11px] font-black uppercase tracking-[0.2em]">Kelompok Riset</div>
+            </div>
+
+            {/* Stat Item */}
+            <div className="group bg-white/5 backdrop-blur-sm border border-white/10 p-10 rounded-[2.5rem] text-center hover:bg-white/10 hover:-translate-y-2 transition-all duration-500 shadow-xl">
+              <div className="mx-auto w-14 h-14 mb-6 rounded-2xl bg-[#D9D9D9]/10 flex items-center justify-center text-[#D9D9D9]">
+                <Hash size={26} />
+              </div>
+              <div className="text-5xl font-black text-white mb-3 tracking-tighter drop-shadow-md">
+                {stats.kategori}
+              </div>
+              <div className="text-[#D9D9D9]/70 text-[11px] font-black uppercase tracking-[0.2em]">Kategori Topik</div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
 
     </main>
   )

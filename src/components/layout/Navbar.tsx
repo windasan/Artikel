@@ -75,7 +75,7 @@ export function Navbar() {
   const navLinks = [
     { href: '/' as Route, label: 'Beranda', icon: <Compass size={16} /> },
     { href: '/artikel' as Route, label: 'Artikel', icon: <BookOpen size={16} /> },
-    { href: '/penulis' as Route, label: 'Penulis', icon: <Users size={16} /> },
+    { href: '/penulis' as Route, label: 'Profil', icon: <Users size={16} /> },
     { href: '/tentang' as Route, label: 'Tentang', icon: <Info size={16} /> },
   ]
 

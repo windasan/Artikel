@@ -8,8 +8,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        display: ['Cormorant Garamond', 'Georgia', 'serif'],
-        body:    ['Outfit', 'system-ui', 'sans-serif'],
+        display: ['var(--font-poppins)', 'sans-serif'],
+        body: ['var(--font-montserrat)', 'sans-serif'],
       },
       colors: {
         coral:   { DEFAULT: '#F08060', light: '#FCE8DF', dark: '#C05030' },

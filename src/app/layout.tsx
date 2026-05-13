@@ -1,23 +1,21 @@
 import type { Metadata } from 'next'
-import { Outfit, Cormorant_Garamond } from 'next/font/google' // Import font
+import { Poppins, Montserrat } from 'next/font/google';
 import "@/app/globals.css"
 import { Navbar } from '@/components/layout/Navbar'
 import { Toaster } from 'react-hot-toast'
 import { Footer } from '@/components/layout/Footer' // <--- Import Footer
 
 // Konfigurasi Font
-const outfit = Outfit({ 
-  subsets: ['latin'],
-  variable: '--font-outfit',
-})
+const poppins = Poppins({ 
+  subsets: ['latin'], 
+  weight: ['400', '700', '900'],
+  variable: '--font-poppins', // Nama variabel CSS
+});
 
-const cormorant = Cormorant_Garamond({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
-  style: ['normal', 'italic'],
-  variable: '--font-cormorant',
-})
-
+const montserrat = Montserrat({ 
+  subsets: ['latin'], 
+  variable: '--font-montserrat',
+});
 export const metadata: Metadata = {
   title: {
     default: 'Jurnal Pariwisata UNY',
@@ -32,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="id" className={`${outfit.variable} ${cormorant.variable} grain`}>
+    <html lang="id" className={`${poppins.variable} ${montserrat.variable} grain`}>
       <body className="antialiased font-sans">
         <Navbar />
         <main>{children}</main>

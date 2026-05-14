@@ -53,7 +53,7 @@ export default function ArticleSlider({ latestArtikel }: { latestArtikel: Artike
           </div>
 
           {/* SISI KANAN */}
-          <div className="lg:w- w-full relative">
+          <div className="lg:w-[800px] w-full relative">
             {/* Tombol Navigasi Desktop */}
             <div className="absolute -top-20 pt-5 left-10 hidden lg:flex gap-10 z-30">
               <button 

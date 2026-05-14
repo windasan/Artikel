@@ -1,7 +1,5 @@
 'use client'
 // src/components/editor/EditorContainer.tsx
-// Main editor logic — extracted so it can be dynamically imported (avoids Tiptap SSR issues)
-
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
@@ -9,6 +7,7 @@ import { TiptapEditor } from './TiptapEditor'
 import { EditorSidebar } from './EditorSidebar'
 import { EditorTopbar } from './EditorTopbar'
 import type { Kategori, Kelompok, Profile } from '@/types/database'
+import type { AuthorType } from '@/types/database'
 import toast from 'react-hot-toast'
 import type { Route } from 'next'
 
@@ -21,6 +20,7 @@ interface EditorState {
   kata_kunci:      string[]
   kategori_id:     string
   kelompok_id:     string
+  author_type:     AuthorType
   volume:          string
   nomor_edisi:     string
   penulis_ids:     string[]
@@ -31,6 +31,7 @@ interface EditorState {
 const EMPTY_STATE: EditorState = {
   judul: '', subjudul: '', abstrak: '', konten: '', konten_json: null,
   kata_kunci: [], kategori_id: '', kelompok_id: '',
+  author_type: 'individual',
   volume: 'Vol.1, No.1', nomor_edisi: '1', penulis_ids: [],
   foto_sampul_url: null, pdf_url: null,
 }
@@ -41,21 +42,24 @@ export function EditorContainer({ articleId: initialId }: { articleId: string | 
   const router   = useRouter()
   const supabase = createClient()
 
-  const [state,        setState]       = useState<EditorState>(EMPTY_STATE)
-  const [articleId,    setArticleId]   = useState<string | null>(initialId)
-  const [saveStatus,   setSaveStatus]  = useState<'saved' | 'saving' | 'unsaved' | 'error'>('saved')
-  const [wordCount,    setWordCount]   = useState(0)
-  const [loading,      setLoading]     = useState(true)
-  const [myProfile,    setMyProfile]   = useState<Profile | null>(null)
-  const [kategoriList, setKategori]    = useState<Kategori[]>([])
-  const [kelompokList, setKelompok]    = useState<Kelompok[]>([])
-  const [allPenulis,   setAllPenulis]  = useState<Profile[]>([])
+  const [state,        setState]      = useState<EditorState>(EMPTY_STATE)
+  const [articleId,    setArticleId]  = useState<string | null>(initialId)
+  const [saveStatus,   setSaveStatus] = useState<'saved' | 'saving' | 'unsaved' | 'error'>('saved')
+  const [wordCount,    setWordCount]  = useState(0)
+  const [loading,      setLoading]    = useState(true)
+  const [myProfile,    setMyProfile]  = useState<Profile | null>(null)
+  const [kategoriList, setKategori]   = useState<Kategori[]>([])
+  const [kelompokList, setKelompok]   = useState<Kelompok[]>([])
+  const [allPenulis,   setAllPenulis] = useState<Profile[]>([])
 
   // ── Load support data ─────────────────────────────────────────
   useEffect(() => {
     async function init() {
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { router.push('/login?redirect=' + (initialId ? `/editor/${initialId}` : '/editor/new') as Route); return }
+      if (!user) {
+        router.push('/login?redirect=' + (initialId ? `/editor/${initialId}` : '/editor/new') as Route)
+        return
+      }
 
       const [profileRes, katRes, kgRes, penulisRes] = await Promise.all([
         supabase.from('profiles').select('*').eq('id', user.id).single(),
@@ -69,12 +73,10 @@ export function EditorContainer({ articleId: initialId }: { articleId: string | 
       setKelompok(kgRes.data ?? [])
       setAllPenulis(penulisRes.data ?? [])
 
-      // Auto-add current user
       if (!initialId && profileRes.data) {
         setState(s => ({ ...s, penulis_ids: [profileRes.data!.id] }))
       }
 
-      // Load existing article
       if (initialId) {
         const { data: art } = await supabase
           .from('artikel')
@@ -92,6 +94,7 @@ export function EditorContainer({ articleId: initialId }: { articleId: string | 
             kata_kunci:      art.kata_kunci      ?? [],
             kategori_id:     art.kategori_id     ?? '',
             kelompok_id:     art.kelompok_id     ?? '',
+            author_type:     (art as any).author_type ?? 'individual',
             volume:          art.volume          ?? '',
             nomor_edisi:     art.nomor_edisi     ?? '',
             foto_sampul_url: art.foto_sampul_url,
@@ -105,6 +108,20 @@ export function EditorContainer({ articleId: initialId }: { articleId: string | 
     }
     init()
   }, [initialId, supabase, router])
+
+  // ── Auto-populate group members when author_type = group ──────
+  useEffect(() => {
+    if (state.author_type !== 'group' || !state.kelompok_id) return
+    supabase
+      .from('kelompok_anggota')
+      .select('profile_id')
+      .eq('kelompok_id', state.kelompok_id)
+      .then(({ data }) => {
+        if (data && data.length > 0) {
+          setState(prev => ({ ...prev, penulis_ids: data.map(m => m.profile_id) }))
+        }
+      })
+  }, [state.author_type, state.kelompok_id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Autosave ──────────────────────────────────────────────────
   const autosave = useCallback(async (s: EditorState) => {
@@ -130,6 +147,7 @@ export function EditorContainer({ articleId: initialId }: { articleId: string | 
         kata_kunci:  s.kata_kunci,
         kategori_id: s.kategori_id || null,
         kelompok_id: s.kelompok_id || null,
+        author_type: s.author_type,
         volume:      s.volume      || null,
         nomor_edisi: s.nomor_edisi || null,
       }
@@ -178,21 +196,24 @@ export function EditorContainer({ articleId: initialId }: { articleId: string | 
 
   // ── Submit for review ─────────────────────────────────────────
   const handleSubmit = async () => {
-    if (!state.judul.trim())    { toast.error('Judul artikel wajib diisi'); return }
-    if (!state.abstrak.trim())  { toast.error('Abstrak wajib diisi'); return }
-    if (!state.kategori_id)     { toast.error('Pilih kategori artikel'); return }
-    if (!state.penulis_ids.length) { toast.error('Minimal satu penulis'); return }
+    if (!state.judul.trim())        { toast.error('Judul artikel wajib diisi'); return }
+    if (!state.abstrak.trim())      { toast.error('Abstrak wajib diisi'); return }
+    if (!state.kategori_id)         { toast.error('Pilih kategori artikel'); return }
+    if (!state.penulis_ids.length)  { toast.error('Minimal satu penulis'); return }
 
     await autosave(state)
     if (!articleId) { toast.error('Terjadi kesalahan, coba lagi'); return }
 
-    const tid = toast.loading('Mengirim untuk review...')
-    const { error } = await supabase.from('artikel').update({ status: 'pending' }).eq('id', articleId)
+    const tid = toast.loading('Mengirim ke Tim Redaksi...')
+    const { error } = await supabase
+      .from('artikel')
+      .update({ status: 'pending_redaksi' })
+      .eq('id', articleId)
 
     if (error) {
       toast.error('Gagal: ' + error.message, { id: tid })
     } else {
-      toast.success('Artikel berhasil dikirim untuk review!', { id: tid, duration: 5000 })
+      toast.success('Artikel dikirim ke Tim Redaksi!', { id: tid, duration: 5000 })
       router.push('/editor/drafts')
     }
   }
@@ -220,11 +241,11 @@ export function EditorContainer({ articleId: initialId }: { articleId: string | 
           onSubmit={handleSubmit}
           onSaveDraft={() => autosave(state)}
           articleId={articleId}
+          userRole={myProfile?.role ?? null}
         />
 
         <div className="flex-1 overflow-y-auto">
           <div className="max-w-[720px] mx-auto px-8 py-6">
-            {/* Title */}
             <textarea
               value={state.judul}
               onChange={e => {
@@ -237,7 +258,6 @@ export function EditorContainer({ articleId: initialId }: { articleId: string | 
               style={{ fontSize: 'clamp(24px, 3vw, 38px)' }}
               rows={1}
             />
-
             <input
               type="text"
               value={state.subjudul}
@@ -245,8 +265,6 @@ export function EditorContainer({ articleId: initialId }: { articleId: string | 
               placeholder="Subjudul atau tagline opsional..."
               className="w-full border-none outline-none bg-transparent text-[15px] text-[var(--ink-lt)] mb-6 font-body"
             />
-
-            {/* Tiptap */}
             <TiptapEditor
               content={state.konten_json ?? state.konten}
               onChange={(html, json) => {
@@ -256,7 +274,6 @@ export function EditorContainer({ articleId: initialId }: { articleId: string | 
                 setWordCount(words.length)
               }}
             />
-
             <div className="mt-4 pt-4 border-t border-[rgba(28,43,43,0.07)] text-[12px] text-[var(--ink-lt)] flex gap-4">
               <span>✍️ {wordCount} kata</span>
               <span>⏱ ~{Math.ceil(wordCount / 200) || 1} menit baca</span>

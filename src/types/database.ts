@@ -1,8 +1,16 @@
 // src/types/database.ts
-// Generated types untuk Supabase tables
 
-export type Role = 'penulis' | 'editor' | 'reviewer' | 'koordinator' | 'admin'
-export type ArticleStatus = 'draft' | 'pending' | 'published' | 'rejected'
+export type Role = 'admin' | 'design_layout' | 'redaksi' | 'publikasi' | 'it'
+export type ArticleStatus = 'draft' | 'pending_redaksi' | 'pending_publikasi' | 'published' | 'rejected'
+export type AuthorType = 'individual' | 'group'
+
+export const ROLE_LABELS: Record<Role, string> = {
+  admin:          'Admin',
+  design_layout:  'Design & Layout',
+  redaksi:        'Tim Redaksi',
+  publikasi:      'Tim Publikasi',
+  it:             'Tim IT',
+}
 
 export interface Profile {
   id: string
@@ -46,6 +54,7 @@ export interface Artikel {
   kata_kunci: string[]
   kategori_id: string | null
   kelompok_id: string | null
+  author_type: AuthorType
   volume: string | null
   nomor_edisi: string | null
   halaman_mulai: number | null
@@ -62,7 +71,6 @@ export interface Artikel {
   updated_at: string
 }
 
-// Denormalized view untuk artikel lengkap
 export interface ArtikelLengkap extends Artikel {
   kategori_nama: string | null
   kategori_slug: string | null
@@ -79,13 +87,12 @@ export interface ArtikelLengkap extends Artikel {
   }> | null
 }
 
-// Filter params untuk daftar artikel
 export interface ArtikelFilter {
   search?: string
-  kategori?: string       // slug
+  kategori?: string
   tahun?: number
-  penulis?: string        // profile id
-  kelompok?: string       // kelompok id
+  penulis?: string
+  kelompok?: string
   status?: ArticleStatus
   orderBy?: 'newest' | 'oldest' | 'az' | 'za' | 'views'
   page?: number

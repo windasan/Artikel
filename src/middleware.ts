@@ -1,12 +1,9 @@
 // src/middleware.ts
-import { createServerClient, type CookieOptions } from '@supabase/ssr' 
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-// PERBAIKAN: Ubah nama fungsi dari updateSession menjadi middleware
 export async function middleware(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
-    request,
-  })
+  let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -18,9 +15,7 @@ export async function middleware(request: NextRequest) {
         },
         setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-          supabaseResponse = NextResponse.next({
-            request,
-          })
+          supabaseResponse = NextResponse.next({ request })
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options)
           )
@@ -30,13 +25,10 @@ export async function middleware(request: NextRequest) {
   )
 
   const { data: { user } } = await supabase.auth.getUser()
-
   const pathname = request.nextUrl.pathname
 
-  // Routes yang butuh login
-  const protectedRoutes = ['/editor', '/editor/new', '/profil']
-  // Routes hanya untuk admin/koordinator
-  const adminRoutes = ['/admin']
+  // Routes that require login
+  const protectedRoutes = ['/editor', '/profil', '/admin']
 
   if (protectedRoutes.some(r => pathname.startsWith(r)) && !user) {
     const url = request.nextUrl.clone()
@@ -45,14 +37,31 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  if (adminRoutes.some(r => pathname.startsWith(r)) && !user) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/login'
-    url.searchParams.set('redirect', pathname)
-    return NextResponse.redirect(url)
+  // Editor new/create: only design_layout + admin
+  if (
+    user &&
+    (pathname === '/editor/new' || pathname.startsWith('/editor/') && pathname !== '/editor/drafts')
+  ) {
+    // Fetch profile role
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+
+    const role = profile?.role ?? ''
+    const canEdit = ['admin', 'design_layout', 'redaksi', 'publikasi'].includes(role)
+
+    if (pathname === '/editor/new' && !['admin', 'design_layout'].includes(role)) {
+      return NextResponse.redirect(new URL('/admin', request.url))
+    }
+
+    if (!canEdit && pathname.startsWith('/editor/')) {
+      return NextResponse.redirect(new URL('/admin', request.url))
+    }
   }
 
-  // Jika sudah login dan buka /login, redirect ke /
+  // Already logged in trying to access /login
   if (pathname === '/login' && user) {
     return NextResponse.redirect(new URL('/', request.url))
   }

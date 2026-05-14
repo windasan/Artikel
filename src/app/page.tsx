@@ -25,7 +25,7 @@ import {
   Tag
 } from 'lucide-react'
 import type { ArtikelLengkap } from '@/types/database' // Pastikan path ini sesuai
-import BGTM from '@/Images/BTGM.jpeg'; // Menggunakan alias @ yang mengarah ke folder src
+import BGTM from 'public/Images/BTGM.jpeg'; // Menggunakan alias @ yang mengarah ke folder src
 import { ArtikelCard } from '@/components/artikel/ArtikelCard'
 import ArticleSlider from '@/components/home/ArticleSlider'
 

@@ -1,37 +1,38 @@
 // src/app/auth/callback/route.ts
+import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET(request: NextRequest) {
-  const requestUrl  = new URL(request.url)
-  const code        = requestUrl.searchParams.get('code')
-  const redirectTo  = requestUrl.searchParams.get('redirect') ?? '/'
+export async function GET(request: Request) {
+  const { searchParams, origin } = new URL(request.url)
+  const code = searchParams.get('code')
+  
+  // Mengambil nilai redirect, default ke origin jika tidak ada
+  const next = searchParams.get('redirect') ?? '/'
 
   if (code) {
     const supabase = createClient()
+    
+    // Menukar kode dengan sesi login (session)
     const { error } = await supabase.auth.exchangeCodeForSession(code)
-
+    
     if (!error) {
-      // Check profile completeness — jika belum isi NIM, arahkan ke profil
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('nim')
-          .eq('id', user.id)
-          .single()
+      // Pastikan URL redirect menggunakan origin dari request 
+      // untuk menghindari error domain yang berbeda
+      const forwardedHost = request.headers.get('x-forwarded-host') 
+      const isLocalEnv = process.env.NODE_ENV === 'development'
 
-        if (!profile?.nim) {
-          return NextResponse.redirect(
-            new URL('/profil/lengkapi?redirect=' + encodeURIComponent(redirectTo), requestUrl.origin)
-          )
-        }
+      if (isLocalEnv) {
+        return NextResponse.redirect(`${origin}${next}`)
+      } else if (forwardedHost) {
+        return NextResponse.redirect(`https://${forwardedHost}${next}`)
+      } else {
+        return NextResponse.redirect(`${origin}${next}`)
       }
-
-      return NextResponse.redirect(new URL(redirectTo, requestUrl.origin))
+    } else {
+      console.error('Auth Callback Error:', error)
     }
   }
 
-  // Fallback ke halaman error auth
-  return NextResponse.redirect(new URL('/login?error=auth_failed', requestUrl.origin))
+  // Jika gagal, kembalikan user ke halaman login dengan pesan error
+  return NextResponse.redirect(`${origin}/login?error=Terjadi_kesalahan_saat_login`)
 }

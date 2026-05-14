@@ -21,31 +21,23 @@ function LoginForm() {
 
   // ── Google OAuth ──────────────────────────────────
   const handleGoogle = async () => {
-  setLoading(true)
-  
-  // Mengambil domain yang sedang digunakan secara otomatis
-  const originUrl = typeof window !== 'undefined' 
-    ? window.location.origin 
-    : process.env.NEXT_PUBLIC_SITE_URL
-
-  const { error } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: {
-      redirectTo: `${originUrl}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`,        
-      queryParams: {
-        access_type: 'offline',
-        prompt: 'consent',
-        // Tetap gunakan pembatasan domain UNY untuk keamanan
-        hd: 'student.uny.ac.id', 
+    setLoading(true)
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+          redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`,        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+          hd: 'student.uny.ac.id', // Batasi ke domain UNY (opsional)
+        },
       },
-    },
-  })
-
-  if (error) {
-    toast.error('Gagal masuk: ' + error.message)
-    setLoading(false)
+    })
+    if (error) {
+      toast.error('Gagal masuk: ' + error.message)
+      setLoading(false)
+    }
+    // Redirect handled by Supabase
   }
-}
 
   // ── Email/Password ────────────────────────────────
   const handleEmailLogin = async (e: React.FormEvent) => {

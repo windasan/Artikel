@@ -57,7 +57,7 @@ export default async function ArtikelDetailPage({ params }: Props) {
       {artikel.foto_sampul_url && (
         <div className="relative h-[280px] sm:h-[360px] overflow-hidden bg-[var(--cream)]">
           <Image
-            src={artikel.foto_sampul_url}
+            src={artikel.foto_sampul_url || '/Images/alt.jpg'}
             alt={artikel.judul}
             fill className="object-cover"
           />

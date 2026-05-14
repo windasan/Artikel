@@ -35,13 +35,13 @@ export function Footer() {
               Portal resmi publikasi artikel dan jurnal mahasiswa Program Studi Pariwisata Universitas Negeri Yogyakarta. Mengulas pesona destinasi, budaya, dan inovasi industri pariwisata berkelanjutan.
             </p>
             <div className="flex gap-4 pt-2">
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-[#D9D9D9] hover:text-[#655348] transition-all hover:-translate-y-1 shadow-lg" target="_blank" rel="noopener noreferrer">
+              <a href="https://www.instagram.com/pariwisata.uny/" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-[#D9D9D9] hover:text-[#655348] transition-all hover:-translate-y-1 shadow-lg" target="_blank" rel="noopener noreferrer">
                 <Instagram size={18} />
               </a>
               <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-[#D9D9D9] hover:text-[#655348] transition-all hover:-translate-y-1 shadow-lg" target="_blank" rel="noopener noreferrer">
                 <Twitter size={18} />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-[#D9D9D9] hover:text-[#655348] transition-all hover:-translate-y-1 shadow-lg" target="_blank" rel="noopener noreferrer">
+              <a href="https://www.youtube.com/@PariwisataUNY" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-[#D9D9D9] hover:text-[#655348] transition-all hover:-translate-y-1 shadow-lg" target="_blank" rel="noopener noreferrer">
                 <Youtube size={18} />
               </a>
             </div>
@@ -53,17 +53,33 @@ export function Footer() {
               Hubungi Kami
             </p>
             <ul className="space-y-4">
+            {/* Alamat - Buka Google Maps */}
               <li className="flex gap-3 text-sm text-[#D9D9D9]/80 hover:text-white transition-colors">
                 <MapPin size={18} className="shrink-0 mt-0.5 text-[#D9D9D9]" />
-                <span className="leading-relaxed">Kampus Karangmalang,<br/>Universitas Negeri Yogyakarta,<br/>Sleman, DIY 55281</span>
+                <a 
+                  href="https://maps.google.com/?q=Universitas+Negeri+Yogyakarta+Kampus+Karangmalang" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="leading-relaxed hover:underline"
+                >
+                  Kampus Karangmalang,<br/>Universitas Negeri Yogyakarta,<br/>Sleman, DIY 55281
+                </a>
               </li>
+
+              {/* Telepon - Langsung Panggil (Call) */}
               <li className="flex gap-3 text-sm text-[#D9D9D9]/80 hover:text-white transition-colors">
                 <Phone size={18} className="shrink-0 text-[#D9D9D9]" />
-                <span>+62 274 586168</span>
+                <a href="tel:+62274586168" className="hover:underline">
+                  +62 274 586168
+                </a>
               </li>
+
+              {/* Email - Langsung Buka Aplikasi Email */}
               <li className="flex gap-3 text-sm text-[#D9D9D9]/80 hover:text-white transition-colors">
                 <Mail size={18} className="shrink-0 text-[#D9D9D9]" />
-                <span>pariwisata@uny.ac.id</span>
+                <a href="mailto:s1pariwisata@uny.ac.id" className="hover:underline">
+                  s1pariwisata@uny.ac.id
+                </a>
               </li>
             </ul>
           </div>

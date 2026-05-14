@@ -150,6 +150,7 @@ export function EditorContainer({ articleId: initialId }: { articleId: string | 
         author_type: s.author_type,
         volume:      s.volume      || null,
         nomor_edisi: s.nomor_edisi || null,
+        foto_sampul_url: s.foto_sampul_url || null,
       }
 
       if (!articleId) {

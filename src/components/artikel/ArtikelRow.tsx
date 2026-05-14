@@ -12,7 +12,7 @@ export function ArtikelRow({ artikel }: { artikel: ArtikelLengkap; index?: numbe
         {/* Gambar (Sisi Kiri) */}
         <div className="relative w-full md:w-[350px] h-52 md:h-full shrink-0 overflow-hidden">
           <Image 
-            src={artikel.foto_sampul_url || '/Images/BGTM.jpeg'} 
+            src={artikel.foto_sampul_url || '/Images/alt.jpg'} 
             alt={artikel.judul} 
             fill 
             className="object-cover transition-transform duration-500 group-hover:scale-105"

@@ -83,7 +83,7 @@ export default function TentangPage() {
         <div className="relative rounded-[3rem] overflow-hidden aspect-video shadow-2xl mb-12">
           {/* Ganti dengan foto kelas jika ada */}
           <Image 
-            src="/Images/BGTM.jpeg" 
+            src="/Images/photo.jpg" 
             alt="Pariwisata Kelas A UNY" 
             fill 
             className="object-cover"

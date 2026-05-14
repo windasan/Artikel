@@ -25,7 +25,7 @@ import {
   Tag
 } from 'lucide-react'
 import type { ArtikelLengkap } from '@/types/database' // Pastikan path ini sesuai
-import BGTM from 'public/Images/BTGM.jpeg'; // Menggunakan alias @ yang mengarah ke folder src
+import BTGM from 'public/Images/BTGM.jpeg'; // Menggunakan alias @ yang mengarah ke folder src
 import { ArtikelCard } from '@/components/artikel/ArtikelCard'
 import ArticleSlider from '@/components/home/ArticleSlider'
 
@@ -94,7 +94,7 @@ export default async function HomePage() {
       <section 
         className="relative min-h-[95vh] flex flex-col items-center justify-center text-center px-6 pt-32 pb-20 overflow-hidden"
         style={{
-          backgroundImage: `url(${BGTM.src})`,
+          backgroundImage: `url(${BTGM.src})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundAttachment: 'fixed',

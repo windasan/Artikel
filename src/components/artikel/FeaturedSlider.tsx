@@ -32,7 +32,7 @@ export default function FeaturedSlider({ articles }: { articles: ArtikelLengkap[
           {/* Gambar Background */}
           <div className="absolute inset-0 w-full h-full">
             <Image
-              src={article.foto_sampul_url || '/Images/BGTM.jpeg'}
+              src={article.foto_sampul_url || '/Images/alt.jpg'}
               alt={article.judul}
               fill
               className="object-cover"

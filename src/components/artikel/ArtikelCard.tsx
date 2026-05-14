@@ -11,7 +11,7 @@ export function ArtikelCard({ artikel }: { artikel: ArtikelLengkap }) {
         {/* Gambar */}
         <div className="relative w-full h-56 md:h-64 overflow-hidden bg-gray-50">
           <Image 
-            src={artikel.foto_sampul_url || '/Images/BGTM.jpeg'} 
+            src={artikel.foto_sampul_url || '/Images/alt.jpg'} 
             alt={artikel.judul} 
             fill 
             className="object-cover transition-transform duration-700 group-hover:scale-105"

@@ -162,7 +162,7 @@ export default async function HomePage() {
                       href="/artikel" 
                       className="group inline-flex items-center mt-8 gap-4 px-8 py-4 border-2 border-[#655348] text-[#655348] rounded-full font-black text-[12px] uppercase tracking-[0.15em] hover:bg-[#655348] hover:text-white transition-all"
                     >
-                      Jelajahi Semua 
+                      Tentang 
                       <ArrowRight size={18} className="transform group-hover:translate-x-2 transition-transform" />
                     </Link>
 

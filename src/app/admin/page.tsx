@@ -2,11 +2,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { AdminStats } from '@/components/admin/AdminStats'
-import { WorkflowTable } from '@/components/admin/WorkflowTable'
-import { AllArticlesTable } from '@/components/admin/AllArticlesTable'
-import { UploadPenulisForm } from '@/components/admin/UploadPenulisForm'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { LayoutDashboard, FileText, Users, Settings } from 'lucide-react'
+import { AdminTabs } from '@/components/admin/AdminTabs'
+import { Settings } from 'lucide-react'
+import type { ArtikelLengkap, Profile } from '@/types/database'
 
 export default async function AdminPage() {
   const supabase = createClient()
@@ -20,15 +18,21 @@ export default async function AdminPage() {
     .eq('id', user.id)
     .single()
 
-  if (profile?.role !== 'admin' && profile?.role !== 'it') {
+  if (profile?.role !== 'admin' && profile?.role !== 'it' && profile?.role !== 'redaksi' && profile?.role !== 'publikasi') {
     redirect('/')
   }
+
+  // MENGAMBIL SEMUA DATA YANG DIBUTUHKAN OLEH TABEL
+  const [pendingRedaksi, pendingPublikasi, allArtikel, penulisList] = await Promise.all([
+    supabase.from('artikel_lengkap').select('*').eq('status', 'pending_redaksi').order('created_at', { ascending: false }),
+    supabase.from('artikel_lengkap').select('*').eq('status', 'pending_publikasi').order('created_at', { ascending: false }),
+    supabase.from('artikel_lengkap').select('*').order('created_at', { ascending: false }).limit(50),
+    supabase.from('profiles').select('*').eq('is_active', true).order('nama_lengkap')
+  ])
 
   return (
     <main className="min-h-screen bg-[#FDFBF7] pt-32 pb-24 px-6">
       <div className="max-w-[1400px] mx-auto">
-        
-        {/* HEADER SECTION */}
         <div className="mb-12">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#655348]/5 border border-[#655348]/10 text-[10px] font-black tracking-widest uppercase mb-4 text-[#655348]">
             <Settings size={12} /> Control Panel
@@ -39,41 +43,16 @@ export default async function AdminPage() {
           <p className="text-gray-500 font-medium mt-2">Kelola alur kerja redaksi dan pengaturan anggota tim.</p>
         </div>
 
-        {/* STATS SECTION */}
         <AdminStats />
+        
+        {/* MENGIRIM DATA KE ADMINTABS */}
+        <AdminTabs 
+          pendingRedaksi={(pendingRedaksi.data ?? []) as ArtikelLengkap[]}
+          pendingPublikasi={(pendingPublikasi.data ?? []) as ArtikelLengkap[]}
+          allArtikel={(allArtikel.data ?? []) as ArtikelLengkap[]}
+          penulisList={(penulisList.data ?? []) as Profile[]}
+        />
 
-        {/* TABS INTERFACE */}
-        <Tabs defaultValue="workflow" className="mt-12">
-          <TabsList className="bg-white border border-gray-100 p-1.5 rounded-[2rem] h-auto gap-2 shadow-sm mb-8">
-            <TabsTrigger value="workflow" className="rounded-full px-6 py-2.5 data-[state=active]:bg-[#655348] data-[state=active]:text-white font-bold text-xs uppercase tracking-widest transition-all">
-              <LayoutDashboard size={14} className="mr-2" /> Workflow
-            </TabsTrigger>
-            <TabsTrigger value="articles" className="rounded-full px-6 py-2.5 data-[state=active]:bg-[#655348] data-[state=active]:text-white font-bold text-xs uppercase tracking-widest transition-all">
-              <FileText size={14} className="mr-2" /> Semua Artikel
-            </TabsTrigger>
-            <TabsTrigger value="authors" className="rounded-full px-6 py-2.5 data-[state=active]:bg-[#655348] data-[state=active]:text-white font-bold text-xs uppercase tracking-widest transition-all">
-              <Users size={14} className="mr-2" /> Kelola Anggota
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="workflow" className="mt-0">
-            <div className="bg-white border border-gray-100 rounded-[2.5rem] p-8 shadow-sm">
-              <WorkflowTable />
-            </div>
-          </TabsContent>
-
-          <TabsContent value="articles" className="mt-0">
-            <div className="bg-white border border-gray-100 rounded-[2.5rem] p-8 shadow-sm">
-              <AllArticlesTable />
-            </div>
-          </TabsContent>
-
-          <TabsContent value="authors" className="mt-0">
-            <div className="bg-white border border-gray-100 rounded-[2.5rem] p-8 shadow-sm">
-              <UploadPenulisForm />
-            </div>
-          </TabsContent>
-        </Tabs>
       </div>
     </main>
   )

@@ -5,197 +5,76 @@ import { AdminStats } from '@/components/admin/AdminStats'
 import { WorkflowTable } from '@/components/admin/WorkflowTable'
 import { AllArticlesTable } from '@/components/admin/AllArticlesTable'
 import { UploadPenulisForm } from '@/components/admin/UploadPenulisForm'
-import type { ArtikelLengkap, Profile } from '@/types/database'
-import { ROLE_LABELS } from '@/types/database'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { LayoutDashboard, FileText, Users, Settings } from 'lucide-react'
 
-async function getAdminData() {
+export default async function AdminPage() {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
+
   if (!user) redirect('/login?redirect=/admin')
 
   const { data: profile } = await supabase
-    .from('profiles').select('*').eq('id', user.id).single()
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
 
-  // All roles can access dashboard; redirect truly unauthorized
-  if (!profile) redirect('/?error=unauthorized')
-
-  const role = profile.role as string
-
-  const [pendingRedaksi, pendingPublikasi, allArtikel, penulisList, stats] = await Promise.all([
-    // Pending redaksi review
-    supabase.from('artikel_lengkap').select('*')
-      .eq('status', 'pending_redaksi')
-      .order('created_at', { ascending: false }),
-
-    // Pending publikasi
-    supabase.from('artikel_lengkap').select('*')
-      .eq('status', 'pending_publikasi')
-      .order('created_at', { ascending: false }),
-
-    // All articles (admin/redaksi/publikasi)
-    ['admin', 'redaksi', 'publikasi'].includes(role)
-      ? supabase.from('artikel_lengkap').select('*')
-          .order('created_at', { ascending: false }).limit(30)
-      : Promise.resolve({ data: [] }),
-
-    // Penulis list (admin/it)
-    ['admin', 'it'].includes(role)
-      ? supabase.from('profiles').select('*').eq('is_active', true).order('nama_lengkap')
-      : Promise.resolve({ data: [] }),
-
-    // Stats
-    Promise.all([
-      supabase.from('artikel').select('id', { count: 'exact', head: true }).eq('status', 'published'),
-      supabase.from('artikel').select('id', { count: 'exact', head: true }).eq('status', 'pending_redaksi'),
-      supabase.from('profiles').select('id', { count: 'exact', head: true }),
-      supabase.from('artikel').select('view_count'),
-    ]),
-  ])
-
-  const totalViews = (stats[3].data ?? []).reduce(
-    (s: number, a: { view_count: number }) => s + (a.view_count ?? 0), 0
-  )
-
-  return {
-    profile:           profile as Profile,
-    role,
-    pendingRedaksi:    (pendingRedaksi.data   ?? []) as ArtikelLengkap[],
-    pendingPublikasi:  (pendingPublikasi.data  ?? []) as ArtikelLengkap[],
-    allArtikel:        (allArtikel.data        ?? []) as ArtikelLengkap[],
-    penulisList:       (penulisList.data       ?? []) as Profile[],
-    stats: {
-      published: stats[0].count ?? 0,
-      pending:   (pendingRedaksi.data?.length ?? 0) + (pendingPublikasi.data?.length ?? 0),
-      penulis:   stats[2].count ?? 0,
-      views:     totalViews,
-    },
+  if (profile?.role !== 'admin' && profile?.role !== 'it') {
+    redirect('/')
   }
-}
-
-export default async function AdminPage() {
-  const { profile, role, pendingRedaksi, pendingPublikasi, allArtikel, penulisList, stats } = await getAdminData()
-
-  const roleLabel = ROLE_LABELS[role as keyof typeof ROLE_LABELS] ?? role
 
   return (
-    <div className="pt-[60px] min-h-screen bg-[var(--paper)]">
-      <div className="max-w-[1200px] mx-auto px-6 py-8">
-
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="font-display text-[32px] font-bold text-[var(--ink)] tracking-tight">
-              Dashboard
-            </h1>
-            <p className="text-[14px] text-[var(--ink-lt)] mt-1">
-              Selamat datang, <span className="font-semibold text-[var(--ink)]">{profile.nama_lengkap}</span>
-              {' '}·{' '}
-              <span className="capitalize text-[var(--coral)] font-semibold">{roleLabel}</span>
-            </p>
+    <main className="min-h-screen bg-[#FDFBF7] pt-32 pb-24 px-6">
+      <div className="max-w-[1400px] mx-auto">
+        
+        {/* HEADER SECTION */}
+        <div className="mb-12">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#655348]/5 border border-[#655348]/10 text-[10px] font-black tracking-widest uppercase mb-4 text-[#655348]">
+            <Settings size={12} /> Control Panel
           </div>
-          {['admin', 'design_layout'].includes(role) && (
-            <a href="/editor/new"
-              className="flex items-center gap-2 px-5 py-2.5 bg-[var(--ink)] text-white text-[13px] font-semibold rounded-xl hover:bg-[var(--coral)] transition-colors">
-              ✏️ Upload Artikel Baru
-            </a>
-          )}
+          <h1 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tighter uppercase">
+            Admin <span className="text-[#655348]">Dashboard</span>
+          </h1>
+          <p className="text-gray-500 font-medium mt-2">Kelola alur kerja redaksi dan pengaturan anggota tim.</p>
         </div>
 
-        {/* Stats — visible to admin, redaksi, publikasi */}
-        {['admin', 'redaksi', 'publikasi'].includes(role) && (
-          <AdminStats stats={stats} />
-        )}
+        {/* STATS SECTION */}
+        <AdminStats />
 
-        {/* ─── REDAKSI SECTION ─── */}
-        {(role === 'redaksi' || role === 'admin') && (
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-4">
-              <h2 className="font-display text-[22px] font-bold text-[var(--ink)]">
-                ✏️ Antrian Redaksi
-              </h2>
-              {pendingRedaksi.length > 0 && (
-                <span className="px-2.5 py-0.5 rounded-full bg-amber-500 text-white text-[12px] font-bold">
-                  {pendingRedaksi.length}
-                </span>
-              )}
+        {/* TABS INTERFACE */}
+        <Tabs defaultValue="workflow" className="mt-12">
+          <TabsList className="bg-white border border-gray-100 p-1.5 rounded-[2rem] h-auto gap-2 shadow-sm mb-8">
+            <TabsTrigger value="workflow" className="rounded-full px-6 py-2.5 data-[state=active]:bg-[#655348] data-[state=active]:text-white font-bold text-xs uppercase tracking-widest transition-all">
+              <LayoutDashboard size={14} className="mr-2" /> Workflow
+            </TabsTrigger>
+            <TabsTrigger value="articles" className="rounded-full px-6 py-2.5 data-[state=active]:bg-[#655348] data-[state=active]:text-white font-bold text-xs uppercase tracking-widest transition-all">
+              <FileText size={14} className="mr-2" /> Semua Artikel
+            </TabsTrigger>
+            <TabsTrigger value="authors" className="rounded-full px-6 py-2.5 data-[state=active]:bg-[#655348] data-[state=active]:text-white font-bold text-xs uppercase tracking-widest transition-all">
+              <Users size={14} className="mr-2" /> Kelola Anggota
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="workflow" className="mt-0">
+            <div className="bg-white border border-gray-100 rounded-[2.5rem] p-8 shadow-sm">
+              <WorkflowTable />
             </div>
-            {pendingRedaksi.length === 0 ? (
-              <div className="text-center py-10 bg-white border border-[rgba(28,43,43,0.10)] rounded-xl text-[var(--ink-lt)]">
-                <div className="text-3xl mb-2">✅</div>
-                <p className="text-[14px]">Tidak ada artikel yang perlu direview saat ini</p>
-              </div>
-            ) : (
-              <WorkflowTable
-                articles={pendingRedaksi}
-                stage="redaksi"
-              />
-            )}
-          </div>
-        )}
+          </TabsContent>
 
-        {/* ─── PUBLIKASI SECTION ─── */}
-        {(role === 'publikasi' || role === 'admin') && (
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-4">
-              <h2 className="font-display text-[22px] font-bold text-[var(--ink)]">
-                🚀 Antrian Publikasi
-              </h2>
-              {pendingPublikasi.length > 0 && (
-                <span className="px-2.5 py-0.5 rounded-full bg-[var(--coral)] text-white text-[12px] font-bold">
-                  {pendingPublikasi.length}
-                </span>
-              )}
+          <TabsContent value="articles" className="mt-0">
+            <div className="bg-white border border-gray-100 rounded-[2.5rem] p-8 shadow-sm">
+              <AllArticlesTable />
             </div>
-            {pendingPublikasi.length === 0 ? (
-              <div className="text-center py-10 bg-white border border-[rgba(28,43,43,0.10)] rounded-xl text-[var(--ink-lt)]">
-                <div className="text-3xl mb-2">✅</div>
-                <p className="text-[14px]">Tidak ada artikel yang menunggu publikasi</p>
-              </div>
-            ) : (
-              <WorkflowTable
-                articles={pendingPublikasi}
-                stage="publikasi"
-              />
-            )}
-          </div>
-        )}
+          </TabsContent>
 
-        {/* ─── DESIGN LAYOUT: artikel sendiri ─── */}
-        {role === 'design_layout' && (
-          <div className="mb-8">
-            <h2 className="font-display text-[22px] font-bold text-[var(--ink)] mb-4">
-              📄 Artikel Saya
-            </h2>
-            <p className="text-[13px] text-[var(--ink-lt)] mb-4">
-              Lihat status artikel yang telah Anda upload di halaman{' '}
-              <a href="/editor/drafts" className="text-[var(--coral)] font-semibold hover:underline">
-                Draft Artikel →
-              </a>
-            </p>
-          </div>
-        )}
-
-        {/* ─── ALL ARTICLES (admin only) ─── */}
-        {role === 'admin' && (
-          <div className="mb-8">
-            <h2 className="font-display text-[22px] font-bold text-[var(--ink)] mb-4">
-              📋 Semua Artikel
-            </h2>
-            <AllArticlesTable articles={allArtikel} />
-          </div>
-        )}
-
-        {/* ─── KELOLA PENULIS (admin + it) ─── */}
-        {['admin', 'it'].includes(role) && (
-          <div className="mb-8">
-            <h2 className="font-display text-[22px] font-bold text-[var(--ink)] mb-4">
-              👤 Kelola Data Anggota
-            </h2>
-            <UploadPenulisForm penulisList={penulisList} />
-          </div>
-        )}
-
+          <TabsContent value="authors" className="mt-0">
+            <div className="bg-white border border-gray-100 rounded-[2.5rem] p-8 shadow-sm">
+              <UploadPenulisForm />
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
-    </div>
+    </main>
   )
 }

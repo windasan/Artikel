@@ -133,28 +133,31 @@ export default async function KelompokDetailPage({ params }: { params: { id: str
               </h3>
               
               <div className="space-y-6">
-                {kelompok.kelompok_anggota?.map((item: any) => (
-                  <Link 
-                    key={item.profiles.id} 
-                    href={`/penulis/${item.profiles.id}` as Route}
-                    className="flex items-center gap-4 group"
-                  >
-                    {/* AVATAR TIDAK GEPENG */}
-                    <div className="flex-shrink-0 w-12 h-12 rounded-full bg-[#D9D9D9]/30 border-2 border-[#D9D9D9] flex items-center justify-center text-[#655348] font-black text-sm group-hover:bg-[#655348] group-hover:text-white group-hover:border-[#655348] transition-all">
-                      {item.profiles.nama_lengkap?.charAt(0)}
-                    </div>
-                    
-                    {/* TEXT WRAPPER DENGAN TRUNCATE */}
-                    <div className="flex-1 min-w-0">
-                      <p className="truncate text-[14px] font-black text-[#655348] leading-tight group-hover:underline decoration-[#D9D9D9] underline-offset-4" title={item.profiles.nama_lengkap}>
-                        {item.profiles.nama_lengkap}
-                      </p>
-                      <p className="truncate text-[11px] text-[#655348]/50 mt-1 font-bold uppercase tracking-wider">
-                        {item.profiles.nim || 'Mahasiswa'}
-                      </p>
-                    </div>
-                  </Link>
-                ))}
+                {kelompok.kelompok_anggota?.map((item: any) => {
+                  // MENCEGAH ERROR JIKA PROFIL TERHAPUS DI DATABASE
+                  if (!item.profiles) return null; 
+
+                  return (
+                    <Link 
+                      key={item.profiles.id} 
+                      href={`/penulis/${item.profiles.id}` as Route}
+                      className="flex items-center gap-4 group"
+                    >
+                      <div className="flex-shrink-0 w-12 h-12 rounded-full bg-[#D9D9D9]/30 border-2 border-[#D9D9D9] flex items-center justify-center text-[#655348] font-black text-sm group-hover:bg-[#655348] group-hover:text-white group-hover:border-[#655348] transition-all">
+                        {item.profiles.nama_lengkap?.charAt(0) || 'U'}
+                      </div>
+                      
+                      <div className="flex-1 min-w-0">
+                        <p className="truncate text-[14px] font-black text-[#655348] leading-tight group-hover:underline decoration-[#D9D9D9] underline-offset-4" title={item.profiles.nama_lengkap}>
+                          {item.profiles.nama_lengkap}
+                        </p>
+                        <p className="truncate text-[11px] text-[#655348]/50 mt-1 font-bold uppercase tracking-wider">
+                          {item.profiles.nim || 'Mahasiswa'}
+                        </p>
+                      </div>
+                    </Link>
+                  )
+                })}
               </div>
             </div>
           </div>

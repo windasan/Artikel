@@ -5,6 +5,7 @@ import {
   ArrowRight, Activity, Zap, Layers 
 } from 'lucide-react'
 import Link from 'next/link'
+import { AllArticlesTable } from '@/components/admin/AllArticlesTable'
 
 export default async function SuperAdminDashboard() {
   const supabase = await createClient()
@@ -119,8 +120,9 @@ export default async function SuperAdminDashboard() {
 
         </div>
 
+
         {/* Recent Activity / Log (Opsional) */}
-        <div className="mt-12 bg-[#FFFFFF] border border-[#D9D9D9] rounded-[32px] p-8">
+        <div className="mt-12 bg-[#FFFFFF] border border-[#D9D9D9] rounded-[32px] p-8 pb-20">
           <div className="flex items-center gap-2 mb-6">
             <Activity size={20} className="text-[#655348]" />
             <h2 className="font-bold text-[18px] text-[#655348]">Aktivitas Sistem Terakhir</h2>
@@ -136,7 +138,9 @@ export default async function SuperAdminDashboard() {
             {/* Tambahkan log aktivitas dinamis di sini jika diperlukan */}
           </div>
         </div>
-
+        <section className='pt-6'>
+        <AllArticlesTable />
+        </section>
       </div>
     </div>
   )

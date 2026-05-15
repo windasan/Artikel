@@ -1,38 +1,36 @@
-// src/app/auth/callback/route.ts
-import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { NextResponse } from 'next/server'
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
-  
-  // Mengambil nilai redirect, default ke origin jika tidak ada
-  const next = searchParams.get('redirect') ?? '/'
+  const next = searchParams.get('next') ?? '/'
 
   if (code) {
-    const supabase = createClient()
+    const supabase = await createClient()
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code)
     
-    // Menukar kode dengan sesi login (session)
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
-    
-    if (!error) {
-      // Pastikan URL redirect menggunakan origin dari request 
-      // untuk menghindari error domain yang berbeda
-      const forwardedHost = request.headers.get('x-forwarded-host') 
-      const isLocalEnv = process.env.NODE_ENV === 'development'
+    if (!error && data?.user) {
+      const email = data.user.email
+      
+      // VALIDASI DOMAIN UNY
+      // Hanya izinkan @student.uny.ac.id atau @staff.uny.ac.id
+      const isUnyEmail = email?.endsWith('@student.uny.ac.id') || 
+                         email?.endsWith('@uny.ac.id')
 
-      if (isLocalEnv) {
-        return NextResponse.redirect(`${origin}${next}`)
-      } else if (forwardedHost) {
-        return NextResponse.redirect(`https://${forwardedHost}${next}`)
-      } else {
-        return NextResponse.redirect(`${origin}${next}`)
+      if (!isUnyEmail) {
+        // Jika bukan email UNY, paksa logout dan arahkan kembali ke login dengan pesan error
+        await supabase.auth.signOut()
+        return NextResponse.redirect(
+          `${origin}/login?error=Akses ditolak. Silakan gunakan akun email resmi UNY (@student.uny.ac.id atau @staff.uny.ac.id).`
+        )
       }
-    } else {
-      console.error('Auth Callback Error:', error)
+
+      // Jika valid, teruskan ke halaman yang dituju
+      return NextResponse.redirect(`${origin}${next}`)
     }
   }
 
-  // Jika gagal, kembalikan user ke halaman login dengan pesan error
-  return NextResponse.redirect(`${origin}/login?error=Terjadi_kesalahan_saat_login`)
+  // Jika terjadi error pada code exchange
+  return NextResponse.redirect(`${origin}/login?error=Terjadi kesalahan saat autentikasi.`)
 }

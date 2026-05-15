@@ -40,8 +40,7 @@ export default function ArticleSlider({ latestArtikel }: { latestArtikel: Artike
               Artikel <br className="hidden lg:block" /> Terbaru
             </h2>
             <p className='text-[#655348]'>
-              Prodi S1 Pariwisata FISIPOL Universitas Negeri Yogyakarta (UNY) resmi dibuka pada 2023, berfokus pada manajemen, perhotelan, ekowisata, dan pemberdayaan destinasi. Berlokasi di Yogyakarta, prodi ini mencetak sarjana pariwisata (S.Par) yang kompeten dengan keahlian bahasa asing dan manajemen wisata.
-            </p>
+"Selamat datang di Ruang Baca Pariwisata UNY. Platform ini didedikasikan untuk mendiseminasikan pemikiran kritis, hasil riset, dan ulasan mendalam mengenai dinamika industri pariwisata global. Fokus kami mencakup inovasi manajemen, keberlanjutan ekowisata, hingga strategi pemberdayaan destinasi demi mewujudkan pariwisata Indonesia yang lebih unggul."            </p>
             
             <Link 
               href="/artikel" 

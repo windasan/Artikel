@@ -110,14 +110,14 @@ export default async function HomePage() {
             Jurnal Pariwisata Terpadu
           </div> */}
 
-          <h1 className="font-display font-black text-white leading-[1.05] tracking-tighter mb-8 drop-shadow-2xl pt-14"
+          <h1 className="font-display font-black text-white leading-[1.1] tracking-tighter mb-8 drop-shadow-2xl pt-14"
             style={{ fontSize: 'clamp(42px, 8vw, 90px)' }}>
             Ruang Jelajah Pariwisata
           </h1>
 
           <div className="relative max-w-5xl mx-auto mb-14">
             <p className="text-[18px] md:text-[24px] font-medium leading-relaxed  drop-shadow-md text-[#D9D9D9] px-4">
-              "Ketimpangan lama tinggal wisatawan pada hotel berbintang menurut kelas di Bali dan NTB tidak terjadi secara kebetulan"
+              "Ruang Jelajah Pariwisata merupakan wadah informasi, eksplorasi, dan edukasi mengenai dunia pariwisata"
             </p>
           </div>
 
@@ -146,7 +146,7 @@ export default async function HomePage() {
   
           {/* Badge "About" */}
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#655348]/100 text-[90%] font-bold  tracking-[0.2em] uppercase mb-6 text-[#ffffff]">
-              Tentang Kami
+              Tentang
             </div>
 
           {/* Judul Utama */}
@@ -156,10 +156,11 @@ export default async function HomePage() {
 
           {/* Deskripsi - px-4 sudah bagus untuk memberi jarak di mobile */}
           <p className="text-[#655348]/70  font-medium leading-relaxed max-w-2xl mt-4">
-        Prodi S1 Pariwisata FISIPOL Universitas Negeri Yogyakarta (UNY) resmi dibuka pada 2023, berfokus pada manajemen, perhotelan, ekowisata, dan pemberdayaan destinasi. Berlokasi di Yogyakarta, prodi ini mencetak sarjana pariwisata (S.Par) yang kompeten dengan keahlian bahasa asing dan manajemen wisata.  </p>
+       "Ruang Jelajah Pariwisata merupakan wadah informasi, eksplorasi, dan edukasi mengenai dunia pariwisata. Media ini hadir untuk membahas berbagai topik di sektor pariwisata. Melalui artikel yang menarik dan informatif, media ini diharapkan dapat menjadi media pembelajaran sekaligus berbagai wawasan untuk masyarakat umum."
+</p>
 
         <Link 
-                      href="/artikel" 
+                      href="/tentang" 
                       className="group inline-flex items-center mt-8 gap-4 px-8 py-4 border-2 border-[#655348] text-[#655348] rounded-full font-black text-[12px] uppercase tracking-[0.15em] hover:bg-[#655348] hover:text-white transition-all"
                     >
                       Tentang 

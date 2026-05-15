@@ -80,8 +80,6 @@ export default async function ArtikelPage({ searchParams }: PageProps) {
       {/* HERO SECTION - GRADIENT PENDEK */}
       <div className="relative pt-[120px] pb-[60px] bg-gradient-to-b from-[#655348] via-[#655348] to-[#655348]/80">
         <div className="max-w-[1200px] mx-auto px-6 relative z-10 text-center">
-           
-          
           <h1 className="font-display text-[42px] md:text-[56px] font-black text-[#FFFFFF] tracking-tighter leading-none mb-4 drop-shadow-sm">
             Koleksi Artikel
           </h1>
@@ -92,7 +90,8 @@ export default async function ArtikelPage({ searchParams }: PageProps) {
       </div>
 
       {/* FILTER ARTIKEL */}
-      <div className="relative z-20 max-w-[1200px] mx-auto px-6 -mt-6">
+      {/* Dibungkus w-full dan sticky di level root agar tidak terpotong saat scroll */}
+      <div className="sticky top-[64px] z-30 w-full -mt-6">
         <ArtikelFilter kategoriList={kategoriList} currentFilters={filters} />
       </div>
 

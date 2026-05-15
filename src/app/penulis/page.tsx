@@ -68,12 +68,11 @@ export default function DirektoriPublikPage() {
           </div>
           
           <h1 className="font-display text-[48px] md:text-[72px] font-black text-white tracking-tighter leading-[1.1] mb-6">
-            Kelompok Riset &<br className="hidden md:block" /> Penulis Artikel
+            Kelompok &<br className="hidden md:block" /> Penulis Artikel
           </h1>
           
           <p className="text-[16px] md:text-[18px] text-white/80 max-w-2xl mx-auto font-medium leading-relaxed">
-            Eksplorasi jaringan kolaborasi mahasiswa pariwisata. Temukan kelompok riset unggulan dan kontributor independen di balik setiap publikasi kami.
-          </p>
+Jelajahi profil para kontributor yang berbagi wawasan melalui platform ini. Temukan kelompok dan penulis artikel mahasiswa.          </p>
         </div>
 
         {/* Dekorasi Background */}

@@ -7,7 +7,7 @@ export function Footer() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="bg-[#655348] pt-24 pb-12 px-6 overflow-hidden relative font-sans text-[#D9D9D9]">
+    <footer className="bg-[#655348] pt-24 pb-0 px-6 overflow-hidden relative font-sans text-[#D9D9D9]">
       {/* Decorative Background Pattern */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
@@ -21,7 +21,7 @@ export function Footer() {
       </div>
 
       <div className="max-w-[1200px] mx-auto relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-2">
           
           {/* Brand Info */}
           <div className="lg:col-span-2 space-y-6">
@@ -85,7 +85,7 @@ export function Footer() {
           </div>
 
           {/* Links Section (Penulisan statis untuk TypedRoutes) */}
-          <div className="space-y-6">
+          <div className="space-y-6 hidden md:block">
             <p className="text-[12px] font-black text-white uppercase tracking-[3px] flex items-center gap-2">
               Navigasi
             </p>
@@ -99,13 +99,12 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-6">
-          <p className="text-[11px] font-bold text-[#D9D9D9]/50 tracking-[0.1em] text-center md:text-left">
+        <div className="pt-8 border-t border-white/10 flex flex-col md:flex-col justify-between items-center gap-6">
+          <p className="text-[12px] font- text-[#D9D9D9]/50 tracking-[0.1em] text-center md:text-left px-18 md:px-20">
             © {currentYear} Ruang Jelajah Pariwisata UNY. Hak Cipta Dilindungi.
           </p>
-          <div className="flex items-center gap-6">
-             <a href="#" className="text-[11px] font-bold text-[#D9D9D9]/50 hover:text-white uppercase tracking-widest">Kebijakan Privasi</a>
-             <a href="#" className="text-[11px] font-bold text-[#D9D9D9]/50 hover:text-white uppercase tracking-widest">Ketentuan</a>
+          <div className="flex items-baseline gap-6">
+             <a href="https://cryed.cloud" className="text-[6px] font-bold text-[#D9D9D9]/50 hover:text-white uppercase tracking-widest">Cryed</a>
           </div>
         </div>
       </div>

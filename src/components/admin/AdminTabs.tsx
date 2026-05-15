@@ -88,8 +88,9 @@ export function AdminTabs({ pendingRedaksi, pendingPublikasi, allArtikel, penuli
           </div>
         )}
 
-        {/* Meneruskan props ke komponen masing-masing */}
-        {activeTab === 'articles' && <AllArticlesTable articles={allArtikel} />}
+        {/* HANYA PANGGIL KOMPONENNYA SAJA KARENA ALLARTICLESTABLE SUDAH FETCH DATA SENDIRI */}
+        {activeTab === 'articles' && <AllArticlesTable />}
+        
         {activeTab === 'authors' && <UploadPenulisForm penulisList={penulisList} />}
       </div>
     </div>

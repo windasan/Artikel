@@ -83,7 +83,7 @@ export function HeroSearch() {
       {/* Label "Cari" - Muncul hanya saat tertutup */}
       {!isExpanded && (
         <span className="absolute left-14 whitespace-nowrap text-[10px] font-black tracking-widest text-[#655348]/40 uppercase pointer-events-none transition-opacity">
-          Cari
+
         </span>
       )}
     </div>

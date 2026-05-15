@@ -88,7 +88,7 @@ export default function TentangPage() {
             fill 
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-[#655348]/40 flex items-center justify-center">
+          <div className="absolute inset-0 bg-[#655348]/40 flex place-items-start justify-center">
             <div className="p-8 border-4 border-white/30 rounded-[2rem] backdrop-blur-sm">
               <p className="text-white text-2xl font-black uppercase tracking-[0.5em]">Tourism UNY '23</p>
             </div>

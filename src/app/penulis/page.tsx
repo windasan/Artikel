@@ -181,7 +181,7 @@ export default function DirektoriPublikPage() {
             
             {individualAuthors.length === 0 && (
               <div className="col-span-full py-10 text-center">
-                <p className="text-[14px] text-[#655348]/50 font-bold">Semua penulis saat ini telah tergabung dalam kelompok riset.</p>
+                <p className="text-[14px] text-[#655348]/50 font-bold">Login dengan akun SSO UNY untuk melihat detail Penulis.</p>
               </div>
             )}
           </div>

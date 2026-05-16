@@ -2,10 +2,10 @@
 
 import { useState, Suspense } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Loader2, User } from 'lucide-react'
 
-// Komponen Icon Google SVG resmi
+// Komponen Icon Google SVG resmi dengan deklarasi tipe Props untuk TypeScript
 const GoogleIcon = ({ size = 20, className = "" }: { size?: number, className?: string }) => (
   <svg 
     width={size} 
@@ -21,7 +21,7 @@ const GoogleIcon = ({ size = 20, className = "" }: { size?: number, className?: 
   </svg>
 );
 
-// 1. Ekstrak isi halaman ke komponen baru
+// Pindahkan seluruh logika dan UI utama ke dalam komponen terpisah
 function LoginContent() {
   const [googleLoading, setGoogleLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -49,20 +49,22 @@ function LoginContent() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-[#FDFBF7] px-6">
-      <div className="w-full max-w-md p-12 bg-white shadow-[0_32px_64px_-15px_rgba(0,0,0,0.1)] rounded-[3.5rem] border border-gray-100 flex flex-col items-center">
-        
-        {/* Icon Header */}
-        <div className="w-20 h-20 bg-[#655348] text-white rounded-[1.5rem] flex items-center justify-center mb-10 shadow-lg">
-          <User size={40} strokeWidth={2.5} />
-        </div>
+    <div className="relative flex flex-col items-center justify-center pt-[6px] md:pt-20 bg-[#ddd7d7] overflow-hidden min-h-screen">
+  
+      {/* 2. Tambahkan 'z-0' pada background blur */}
+      <div className="absolute top-[-10%] right-[-10%] w-[60%] h-[40%] bg-[#c62d2d3c] rounded-full blur-3xl pointer-events-none z-0"></div>
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#efe81f3f] rounded-full blur-3xl pointer-events-none z-0"></div>
+      <div className="absolute bottom-[-10%] middle-[-10%] w-[40%] h-[40%] bg-[#2d89a553] rounded-full blur-3xl pointer-events-none z-0"></div>
 
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-black text-[#1A1A1A] uppercase tracking-tighter mb-3 leading-none">
-            Selamat <br /> Datang
+
+      <div className="w-[87%] md:w-[40%] p-12 relative z-10 bg-white shadow-[0_32px_64px_-15px_rgba(0,0,0,0.1)] rounded-[3.5rem] border border-gray-100 flex flex-col items-center">
+        
+        <div className="text-center mb-4">
+          <h1 className="text-3xl font-black text-[#655348] uppercase tracking-tighter mb-3 leading-none">
+            Selamat Datang
           </h1>
-          <p className="text-gray-400 text-xs font-bold uppercase tracking-[0.2em]">
-            Portal Log-In Internal
+          <p className="text-[#655348] text-xs font- tracking-[0.1em]">
+            Masuk dengan akun SSO UNY
           </p>
         </div>
 
@@ -73,50 +75,48 @@ function LoginContent() {
           </div>
         )}
 
-        {/* Tombol SSO */}
-        <button
+        {/* Tombol SSO - Menjadi Elemen Utama */}
+          <button
           onClick={handleGoogleLogin}
           disabled={googleLoading}
           type="button"
-          className="w-full flex items-center justify-center gap-4 bg-[#655348] text-white p-5 rounded-[2rem] font-black uppercase tracking-widest hover:bg-[#4a3d35] transition-all shadow-xl active:scale-95 disabled:opacity-70"
+          className="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-100 p-4 rounded-2xl font-bold hover:bg-gray-50 transition-all shadow-sm active:scale-95 text-[#1A1A1A] mb-8"
         >
           {googleLoading ? (
-            <Loader2 className="animate-spin" size={22} />
+            <Loader2 className="animate-spin" size={20} />
           ) : (
-            <div className="bg-white p-1 rounded-full flex items-center justify-center">
-              <GoogleIcon size={20} />
-            </div>
+            <GoogleIcon size={20} className="text-red-500" />
           )}
-          <span className="text-[14px]">Masuk dengan SSO</span>
+          Login SSO
         </button>
 
         {/* Footer Link */}
-        <div className="mt-12 w-full pt-8 border-t border-gray-50 text-center">
+        <div className=" w-full pt- border-t border-gray-50 text-center">
           <a 
             href="#" 
-            className="text-[11px] font-black text-gray-300 uppercase tracking-[0.2em] hover:text-[#655348] transition-colors"
+            className="text-[11px] font-black text-gray-300 mt-0 uppercase tracking-[0.2em] hover:text-[#655348] transition-colors"
           >
             Hubungi Pengelola
           </a>
         </div>
 
+        
+        </div>
         {/* Brand Identity */}
-        <div className="mt-8 text-center">
-          <p className="text-[9px] text-gray-300 font-bold uppercase tracking-[0.4em] leading-relaxed">
+        <div className="mt-16 text-center">
+          <p className="text-[9px] text-gray font-bold uppercase tracking-[0.4em] leading-relaxed relative z-10">
             Departemen Pariwisata <br /> FISIPOL UNY
           </p>
-        </div>
       </div>
     </div>
   )
 }
 
-// 2. Export default component yang membungkus konten dengan Suspense
+// Ekspor default komponen utama yang dibungkus dengan Suspense
 export default function LoginPage() {
   return (
-    // Fallback akan muncul sekilas saat halaman dimuat jika koneksi lambat
     <Suspense fallback={
-      <div className="flex min-h-screen items-center justify-center bg-[#FDFBF7]">
+      <div className="min-h-screen flex items-center justify-center bg-[#ddd7d7]">
         <Loader2 className="animate-spin text-[#655348]" size={32} />
       </div>
     }>

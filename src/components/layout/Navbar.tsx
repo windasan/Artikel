@@ -25,7 +25,7 @@ export function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false)
 
   const dropdownRef = useRef<HTMLDivElement>(null)
-w
+
 
   // Warna Cokelat Utama
   const brownTheme = '#655348'

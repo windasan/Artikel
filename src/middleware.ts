@@ -42,9 +42,9 @@ export async function middleware(request: NextRequest) {
     user &&
     (pathname === '/editor/new' || pathname.startsWith('/editor/') && pathname !== '/editor/drafts')
   ) {
-    // Fetch profile role
+    // PERBAIKAN: Ganti 'profiles' menjadi 'penulis' sesuai skema database JITP
     const { data: profile } = await supabase
-      .from('profiles')
+      .from('penulis')
       .select('role')
       .eq('id', user.id)
       .single()
@@ -61,9 +61,9 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Already logged in trying to access /login
+  // PERBAIKAN: Jika sudah login tapi mencoba ke /login, arahkan ke /profil, BUKAN ke / (Beranda)
   if (pathname === '/login' && user) {
-    return NextResponse.redirect(new URL('/', request.url))
+    return NextResponse.redirect(new URL('/profil', request.url))
   }
 
   return supabaseResponse

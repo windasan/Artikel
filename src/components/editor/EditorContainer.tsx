@@ -222,79 +222,111 @@ export function EditorContainer({ articleId: initialId }: { articleId: string | 
   const update = (field: keyof EditorState, value: unknown) =>
     setState(prev => ({ ...prev, [field]: value }))
 
+  // ── Loading state ─────────────────────────────────────────────
   if (loading) {
     return (
-      <div className="min-h-screen pt-[60px] flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3 text-[var(--ink-lt)]">
-          <div className="w-6 h-6 border-2 border-[var(--coral)] border-t-transparent rounded-full animate-spin" />
-          <span className="text-[13px]">Memuat editor...</span>
+      <>
+        {/* Strip cokelat di belakang navbar saat loading */}
+        <div className="fixed inset-x-0 top-0 h-[64px] bg-[#655348] z-[99] pointer-events-none" />
+        <div className="min-h-screen pt-[60px] flex items-center justify-center bg-[var(--paper)]">
+          <div className="flex flex-col items-center gap-3 text-[var(--ink-lt)]">
+            <div className="w-6 h-6 border-2 border-[#655348] border-t-transparent rounded-full animate-spin" />
+            <span className="text-[13px]">Memuat editor...</span>
+          </div>
         </div>
-      </div>
+      </>
     )
   }
 
   return (
-    <div className="pt-[60px] flex h-screen overflow-hidden bg-[var(--paper)]">
-      {/* Main Editor */}
-      <div className="flex-1 flex flex-col overflow-hidden border-r border-[rgba(28,43,43,0.08)]">
-        <EditorTopbar
-          saveStatus={saveStatus}
-          onSubmit={handleSubmit}
-          onSaveDraft={() => autosave(state)}
-          articleId={articleId}
-          userRole={myProfile?.role ?? null}
-        />
+    <>
+      {/*
+        ┌─────────────────────────────────────────────────────┐
+        │  STRIP COKELAT TRANSPARAN — duduk di z-[99],        │
+        │  tepat di bawah navbar (z-[100]).                   │
+        │  Navbar transparan dengan teks putih jadi terbaca   │
+        │  karena background-nya sekarang cokelat gelap.      │
+        │  pointer-events-none supaya tidak menghalangi klik  │
+        │  pada elemen navbar.                                │
+        └─────────────────────────────────────────────────────┘
+      */}
+      <div className="fixed inset-x-0 top-0 h-[64px] bg-[#655348] z-[99] pointer-events-none" />
 
-        <div className="flex-1 overflow-y-auto">
-          <div className="max-w-[720px] mx-auto px-8 py-6">
-            <textarea
-              value={state.judul}
-              onChange={e => {
-                update('judul', e.target.value)
-                e.target.style.height = 'auto'
-                e.target.style.height = e.target.scrollHeight + 'px'
-              }}
-              placeholder="Judul Artikel Jurnal..."
-              className="w-full border-none outline-none bg-transparent font-display font-bold text-[var(--ink)] tracking-tight leading-[1.15] resize-none overflow-hidden mb-2"
-              style={{ fontSize: 'clamp(24px, 3vw, 38px)' }}
-              rows={1}
-            />
-            <input
-              type="text"
-              value={state.subjudul}
-              onChange={e => update('subjudul', e.target.value)}
-              placeholder="Subjudul atau tagline opsional..."
-              className="w-full border-none outline-none bg-transparent text-[15px] text-[var(--ink-lt)] mb-6 font-body"
-            />
-            <TiptapEditor
-              content={state.konten_json ?? state.konten}
-              onChange={(html, json) => {
-                update('konten', html)
-                update('konten_json', json)
-                const words = html.replace(/<[^>]*>/g, '').trim().split(/\s+/).filter(Boolean)
-                setWordCount(words.length)
-              }}
-            />
-            <div className="mt-4 pt-4 border-t border-[rgba(28,43,43,0.07)] text-[12px] text-[var(--ink-lt)] flex gap-4">
-              <span>✍️ {wordCount} kata</span>
-              <span>⏱ ~{Math.ceil(wordCount / 200) || 1} menit baca</span>
+      {/* Layout utama editor */}
+      <div className="pt-[60px] flex h-screen overflow-hidden bg-[var(--paper)]">
+
+        {/* ── Kolom kiri: area tulis ── */}
+        <div className="flex-1 flex flex-col overflow-hidden border-r border-[rgba(28,43,43,0.08)]">
+
+          {/* Topbar cokelat (menyatu dengan strip di atas) */}
+          <EditorTopbar
+            saveStatus={saveStatus}
+            onSubmit={handleSubmit}
+            onSaveDraft={() => autosave(state)}
+            articleId={articleId}
+            userRole={myProfile?.role ?? null}
+          />
+
+          {/* Area scroll konten */}
+          <div className="flex-1 overflow-y-auto">
+            <div className="max-w-[720px] mx-auto px-8 py-6">
+
+              {/* Input judul */}
+              <textarea
+                value={state.judul}
+                onChange={e => {
+                  update('judul', e.target.value)
+                  e.target.style.height = 'auto'
+                  e.target.style.height = e.target.scrollHeight + 'px'
+                }}
+                placeholder="Judul Artikel Jurnal..."
+                className="w-full border-none outline-none bg-transparent font-display font-bold text-[var(--ink)] tracking-tight leading-[1.15] resize-none overflow-hidden mb-2"
+                style={{ fontSize: 'clamp(24px, 3vw, 38px)' }}
+                rows={1}
+              />
+
+              {/* Input subjudul */}
+              <input
+                type="text"
+                value={state.subjudul}
+                onChange={e => update('subjudul', e.target.value)}
+                placeholder="Subjudul atau tagline opsional..."
+                className="w-full border-none outline-none bg-transparent text-[15px] text-[var(--ink-lt)] mb-6 font-body"
+              />
+
+              {/* Editor Tiptap */}
+              <TiptapEditor
+                content={state.konten_json ?? state.konten}
+                onChange={(html, json) => {
+                  update('konten', html)
+                  update('konten_json', json)
+                  const words = html.replace(/<[^>]*>/g, '').trim().split(/\s+/).filter(Boolean)
+                  setWordCount(words.length)
+                }}
+              />
+
+              {/* Footer statistik kata */}
+              <div className="mt-4 pt-4 border-t border-[rgba(28,43,43,0.07)] text-[12px] text-[var(--ink-lt)] flex gap-4">
+                <span>✍️ {wordCount} kata</span>
+                <span>⏱ ~{Math.ceil(wordCount / 200) || 1} menit baca</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Sidebar */}
-      <EditorSidebar
-        state={state}
-        updateState={update}
-        kategoriList={kategoriList}
-        kelompokList={kelompokList}
-        allPenulis={allPenulis}
-        articleId={articleId}
-        supabase={supabase}
-        onSubmit={handleSubmit}
-        saveStatus={saveStatus}
-      />
-    </div>
+        {/* ── Sidebar kanan ── */}
+        <EditorSidebar
+          state={state}
+          updateState={update}
+          kategoriList={kategoriList}
+          kelompokList={kelompokList}
+          allPenulis={allPenulis}
+          articleId={articleId}
+          supabase={supabase}
+          onSubmit={handleSubmit}
+          saveStatus={saveStatus}
+        />
+      </div>
+    </>
   )
 }

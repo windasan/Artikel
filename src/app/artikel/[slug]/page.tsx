@@ -12,7 +12,8 @@ import { formatDate } from '@/lib/utils'
 interface Props { params: { slug: string } }
 
 async function getArtikel(slug: string): Promise<ArtikelLengkap | null> {
-  const supabase = createClient()
+  // FIX: tambah await — createClient() di server component harus di-await
+  const supabase = await createClient()
   const { data } = await supabase
     .from('artikel_lengkap')
     .select('*')
@@ -48,7 +49,7 @@ export default async function ArtikelDetailPage({ params }: Props) {
   return (
     <div className="bg-[#FDFBF7] min-h-screen pb-24">
       
-     {/* HEADER BANNER - Versi Super Cerah */}
+     {/* HEADER BANNER */}
       <div className="relative h-[400px] md:h-[550px] w-full overflow-hidden bg-white">
         <Image
           src={artikel.foto_sampul_url || '/Images/Alt.jpg'}
@@ -57,13 +58,6 @@ export default async function ArtikelDetailPage({ params }: Props) {
           priority
           className="object-cover" 
         />
-        
-        {/* GRADIENT OVERLAY:
-           - from-[#FDFBF7]: Menghaluskan transisi ke bawah (warna kertas/cream).
-           - via-transparent: Area tengah benar-benar bening 100% tanpa warna penutup.
-           - to-black/25: Sangat tipis, hanya untuk memberikan bayangan samar 
-             agar teks Navbar tetap bisa terbaca jika gambar terlalu terang.
-        */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#FDFBF7] via-transparent to-black/60" />
       </div>
       <div className="relative z-10 max-w-[1100px] mx-auto px-6 -mt-32 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-12 items-start">
@@ -134,7 +128,6 @@ export default async function ArtikelDetailPage({ params }: Props) {
 
           <div className="bg-white border border-gray-100 rounded-[2rem] p-6 shadow-sm">
             <h4 className="text-[11px] font-black uppercase tracking-widest text-gray-400 mb-5">Bacaan Terkait</h4>
-            {/* Memanggil komponen RelatedArticles yang sudah kita perbarui di bawah */}
             <RelatedArticles kategoriId={artikel.kategori_id} currentId={artikel.id} />
           </div>
 

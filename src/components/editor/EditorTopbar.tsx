@@ -24,7 +24,7 @@ export function EditorTopbar({ saveStatus, onSubmit, onSaveDraft, articleId, use
   const dotColor = {
     saved:   'bg-green-400',
     saving:  'bg-yellow-400 animate-pulse',
-    unsaved: 'bg-gray-300',
+    unsaved: 'bg-white/40',
     error:   'bg-red-400',
   }[saveStatus]
 
@@ -38,30 +38,50 @@ export function EditorTopbar({ saveStatus, onSubmit, onSaveDraft, articleId, use
   const submitLabel = userRole ? (SUBMIT_LABEL[userRole] ?? 'Submit untuk Review') : 'Submit untuk Review'
 
   return (
-    <div className="h-[52px] border-b border-[rgba(28,43,43,0.08)] flex items-center px-6 gap-4 bg-white flex-shrink-0">
-      <Link href="/editor/drafts"
-        className="flex items-center gap-1.5 text-[13px] text-[var(--ink-lt)] hover:text-[var(--ink)] transition-colors">
+    // Topbar cokelat — menyatu dengan strip navbar di atasnya
+    <div className="h-[52px] border-b border-white/10 flex items-center px-6 gap-4 bg-[#655348] flex-shrink-0">
+      
+      {/* Kembali */}
+      <Link
+        href="/editor/drafts"
+        className="flex items-center gap-1.5 text-[13px] text-white/60 hover:text-white transition-colors"
+      >
         <ArrowLeft size={14} /> Kembali
       </Link>
 
-      <div className="flex items-center gap-1.5 text-[13px] text-[var(--ink-lt)] ml-2">
-        <span className={`w-1.5 h-1.5 rounded-full ${dotColor}`} />
+      {/* Status autosave */}
+      <div className="flex items-center gap-1.5 text-[13px] text-white/60 ml-2">
+        <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${dotColor}`} />
         {dotLabel}
       </div>
 
+      {/* Aksi kanan */}
       <div className="ml-auto flex gap-2">
+
+        {/* Preview — hanya muncul jika artikel sudah punya id */}
         {articleId && (
-          <Link href={`/artikel/preview/${articleId}` as Route} target="_blank"
-            className="flex items-center gap-1.5 px-3.5 py-1.5 text-[13px] text-[var(--ink-lt)] hover:text-[var(--ink)] hover:bg-[rgba(28,43,43,0.06)] rounded-lg transition-colors">
+          <Link
+            href={`/artikel/preview/${articleId}` as Route}
+            target="_blank"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 text-[13px] text-white/60 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+          >
             <Eye size={14} /> Preview
           </Link>
         )}
-        <button onClick={onSaveDraft}
-          className="flex items-center gap-1.5 px-3.5 py-1.5 text-[13px] border border-[rgba(28,43,43,0.14)] text-[var(--ink-md)] rounded-lg hover:border-[var(--ink-lt)] transition-colors">
+
+        {/* Simpan Draft */}
+        <button
+          onClick={onSaveDraft}
+          className="flex items-center gap-1.5 px-3.5 py-1.5 text-[13px] border border-white/20 text-white/80 rounded-lg hover:border-white/40 hover:text-white hover:bg-white/10 transition-colors"
+        >
           <Save size={14} /> Simpan Draft
         </button>
-        <button onClick={onSubmit}
-          className="flex items-center gap-1.5 px-4 py-1.5 text-[13px] bg-[var(--ink)] text-white font-semibold rounded-lg hover:bg-[var(--coral)] transition-colors">
+
+        {/* Submit utama */}
+        <button
+          onClick={onSubmit}
+          className="flex items-center gap-1.5 px-4 py-1.5 text-[13px] bg-white text-[#655348] font-bold rounded-lg hover:bg-[#D9D9D9] transition-colors shadow-sm"
+        >
           <Send size={14} /> {submitLabel}
         </button>
       </div>

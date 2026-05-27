@@ -4,18 +4,11 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'ui-avatars.com',
-        pathname: '**',
+        hostname: '**',
       },
       {
-        protocol: 'https',
-        hostname: 'lh3.googleusercontent.com',
-        pathname: '**',
-      },
-     {
-        protocol: 'https',
-        hostname: 'kyavowffztigyoprjqhw.supabase.co',
-        pathname: '**',
+        protocol: 'http',
+        hostname: '**',
       },
     ],
   },

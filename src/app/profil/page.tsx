@@ -1,212 +1,200 @@
-// src/app/profil/page.tsx
-import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
-import Link from 'next/link'
-import Image from 'next/image'
-import { User, Mail, Shield, Calendar, Edit3, FileText, ArrowRight, BookOpen } from 'lucide-react'
-import type { ArtikelLengkap } from '@/types/database'
+'use client'
 
-export default async function ProfilPage() {
-  const supabase = await createClient()
+import { useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import type { Profile } from '@/types/database'
+import { useRouter } from 'next/navigation'
+import toast from 'react-hot-toast'
+import { User, Save, Users, Shield, Layers, Loader2, PenLine } from 'lucide-react'
 
-  // 1. Cek Sesi User
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
-  if (authError || !user) {
-    redirect('/login')
+export default function ProfilPage() {
+  const supabase  = createClient()
+  const router    = useRouter()
+  const [profile, setProfile] = useState<Profile | null>(null)
+  const [myKelompok, setMyKelompok] = useState<any[]>([])
+  const [form, setForm] = useState({ nama_lengkap:'', nim:'', no_telepon:'', bio:'' })
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) { router.push('/login?redirect=/profil'); return }
+      
+      const fetchProfile = supabase.from('profiles').select('*').eq('id', user.id).single()
+      const fetchKelompok = supabase
+        .from('kelompok_anggota')
+        .select('kelompok(id, nama, nomor, deskripsi)')
+        .eq('profile_id', user.id)
+
+      Promise.all([fetchProfile, fetchKelompok]).then(([profRes, kelRes]) => {
+        setProfile(profRes.data as Profile)
+        if (profRes.data) {
+          setForm({ 
+            nama_lengkap: profRes.data.nama_lengkap ?? '', 
+            nim: profRes.data.nim ?? '', 
+            no_telepon: profRes.data.no_telepon ?? '', 
+            bio: profRes.data.bio ?? '' 
+          })
+        }
+        
+        if (kelRes.data) {
+          setMyKelompok(kelRes.data.map(k => k.kelompok).filter(Boolean))
+        }
+        setLoading(false)
+      })
+    })
+  }, [supabase, router])
+
+  const save = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!profile) return
+    setSaving(true)
+
+    // PERBAIKAN: Mengubah dari 'penulis' menjadi 'profiles'
+    const { error } = await supabase.from('profiles').update(form).eq('id', profile.id)
+    
+    if (error) {
+      toast.error('Gagal menyimpan: ' + error.message)
+    } else {
+      toast.success('Profil berhasil diperbarui!')
+      setProfile({ ...profile, ...form })
+      router.refresh()
+    }
+    setSaving(false)
   }
 
-  // 2. Ambil data profil terperinci dari tabel penulis/users jika ada
-  const { data: profil } = await supabase
-    .from('penulis')
-    .select('*')
-    .eq('id', user.id)
-    .single()
-
-  // Jika profil belum dilengkapi di database internal, arahkan ke halaman lengkapi
-  if (!profil) {
-    redirect('/profil/lengkapi')
-  }
-
-  // 3. Ambil riwayat artikel milik user tersebut
-  const { data: artikelData } = await supabase
-    .from('artikel_lengkap')
-    .select('*')
-    .eq('penulis_id', user.id)
-    .order('created_at', { ascending: false })
-
-  const listArtikel = (artikelData ?? []) as ArtikelLengkap[]
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-white">
+      <Loader2 size={32} className="animate-spin text-[#655348]" />
+    </div>
+  )
 
   return (
-    <main className="min-h-screen bg-[#FDFBF7] pt-[120px] pb-24">
-      <div className="max-w-[1200px] mx-auto px-6">
-        
-        {/* HEADER SECTION */}
-        <div className="flex flex-col md:flex-row gap-8 items-start md:items-center justify-between mb-12 bg-white p-8 md:p-10 rounded-[2.5rem] border border-[#D9D9D9]/30 shadow-[0_20px_50px_rgba(0,0,0,0.02)]">
-          <div className="flex items-center gap-6">
-            {/* Avatar */}
-            <div className="relative w-24 h-24 rounded-[2rem] overflow-hidden bg-[#655348]/10 border-2 border-[#655348]/20 shrink-0">
-              {profil.avatar_url ? (
-                <Image 
-                  src={profil.avatar_url} 
-                  alt={profil.nama || 'Avatar'} 
-                  fill 
-                  className="object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-[#655348]">
-                  <User size={40} />
-                </div>
-              )}
+    <div className="min-h-screen bg-white">
+      {/* HERO SECTION DENGAN GRADIENT COKLAT */}
+      <div className="relative pt-[140px] pb-[100px] bg-gradient-to-b from-[#655348] via-[#655348] to-white">
+        <div className="max-w-[1100px] mx-auto px-6 relative z-10">
+          <div className="flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
+            <div className="relative">
+              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full bg-white/10 backdrop-blur-md border-4 border-white flex items-center justify-center text-[48px] md:text-[64px] font-black text-white shadow-2xl">
+                {(profile?.nama_lengkap || profile?.email || 'U').charAt(0).toUpperCase()}
+              </div>
             </div>
 
-            {/* Nama & Role */}
-            <div>
-              <h1 className="text-3xl font-black text-[#1A1A1A] tracking-tight leading-none mb-2">
-                {profil.nama || 'Pengguna JITP'}
-              </h1>
-              <div className="flex flex-wrap gap-2 items-center">
-                <span className="px-3 py-1 bg-[#655348] text-white text-[10px] font-black uppercase tracking-widest rounded-md flex items-center gap-1.5">
-                  <Shield size={12} /> {profil.role || 'Author'}
+            <div className="flex-1">
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-4">
+                <span className="px-4 py-1.5 bg-white/20 backdrop-blur-md rounded-full text-white text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
+                  <Shield size={14} /> {profile?.role?.replace('_', ' ') || 'Penulis'}
                 </span>
-                {profil.instansi && (
-                  <span className="px-3 py-1 bg-[#D9D9D9]/40 text-[#655348] text-[11px] font-bold rounded-md">
-                    {profil.instansi}
-                  </span>
+              </div>
+              <h1 className="font-display text-[36px] md:text-[56px] font-black text-white tracking-tighter leading-none mb-2">
+                {profile?.nama_lengkap || 'Pengguna Baru'}
+              </h1>
+              <p className="text-[16px] text-white/70 font-medium tracking-wide">{profile?.email}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* KONTEN UTAMA */}
+      <div className="max-w-[1100px] mx-auto px-6 -mt-10 relative z-20 pb-24">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          {/* FORM EDIT PROFIL */}
+          <div className="lg:col-span-7">
+            <div className="bg-white border border-[#D9D9D9] rounded-[40px] p-8 md:p-10 shadow-xl shadow-[#655348]/5">
+              <div className="flex items-center gap-4 mb-8 border-b border-[#D9D9D9] pb-6">
+                <div className="w-12 h-12 bg-[#655348] rounded-2xl flex items-center justify-center text-white">
+                  <User size={24} />
+                </div>
+                <h2 className="text-[24px] font-black text-[#655348] tracking-tighter">Informasi Data Diri</h2>
+              </div>
+
+              <form onSubmit={save} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-[11px] font-black uppercase tracking-widest text-[#655348]/60 mb-2">Nama Lengkap</label>
+                    <input 
+                      type="text" required
+                      value={form.nama_lengkap}
+                      onChange={e => setForm({ ...form, nama_lengkap: e.target.value })}
+                      className="w-full border-2 border-[#D9D9D9] bg-white rounded-[16px] px-4 py-3.5 text-[14px] font-medium text-[#655348] outline-none focus:border-[#655348] transition-colors" 
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-black uppercase tracking-widest text-[#655348]/60 mb-2">NIM</label>
+                    <input 
+                      type="text" 
+                      value={form.nim}
+                      onChange={e => setForm({ ...form, nim: e.target.value })}
+                      className="w-full border-2 border-[#D9D9D9] bg-white rounded-[16px] px-4 py-3.5 text-[14px] font-medium text-[#655348] outline-none focus:border-[#655348] transition-colors" 
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-black uppercase tracking-widest text-[#655348]/60 mb-2">No. Telepon</label>
+                  <input 
+                    type="tel" 
+                    value={form.no_telepon}
+                    onChange={e => setForm({ ...form, no_telepon: e.target.value })}
+                    className="w-full border-2 border-[#D9D9D9] bg-white rounded-[16px] px-4 py-3.5 text-[14px] font-medium text-[#655348] outline-none focus:border-[#655348] transition-colors" 
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-black uppercase tracking-widest text-[#655348]/60 mb-2">Biografi</label>
+                  <textarea 
+                    value={form.bio} 
+                    onChange={e => setForm({ ...form, bio: e.target.value })}
+                    rows={4} 
+                    className="w-full border-2 border-[#D9D9D9] bg-white rounded-[16px] px-4 py-3.5 text-[14px] font-medium text-[#655348] outline-none focus:border-[#655348] transition-colors resize-none" 
+                  />
+                </div>
+
+                <div className="pt-4 flex justify-end">
+                  <button 
+                    type="submit" disabled={saving}
+                    className="px-8 py-4 bg-[#655348] text-white text-[13px] font-black uppercase tracking-widest rounded-[16px] hover:bg-[#655348]/80 transition-all flex items-center gap-2"
+                  >
+                    {saving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+                    Simpan Profil
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          {/* KELOMPOK RISET */}
+          <div className="lg:col-span-5 sticky top-[100px]">
+            <div className="bg-[#FFFFFF] border-2 border-[#655348] rounded-[40px] p-8 shadow-2xl shadow-[#655348]/10">
+              <h3 className="text-[18px] font-black text-[#655348] uppercase tracking-widest mb-6 flex items-center gap-3 border-b border-[#D9D9D9] pb-4">
+                <Users size={20} /> Kelompok Riset Saya
+              </h3>
+              
+              <div className="space-y-4">
+                {myKelompok.length > 0 ? (
+                  myKelompok.map((klp: any) => (
+                    <div key={klp.id} className="p-5 border-2 border-[#D9D9D9] bg-[#FFFFFF] rounded-[24px]">
+                      <span className="px-3 py-1 bg-[#D9D9D9]/50 rounded-full text-[#655348] text-[10px] font-black uppercase tracking-widest mb-2 inline-block">
+                        Group {klp.nomor}
+                      </span>
+                      <h4 className="font-black text-[18px] text-[#655348] mb-2">{klp.nama}</h4>
+                      <p className="text-[12px] text-[#655348]/60 font-medium line-clamp-2">{klp.deskripsi}</p>
+                    </div>
+                  ))
+                ) : (
+                  <div className="py-10 text-center border-2 border-dashed border-[#D9D9D9] rounded-[24px]">
+                    <Layers size={32} className="mx-auto text-[#D9D9D9] mb-3" />
+                    <p className="text-[12px] font-black text-[#655348]/40 uppercase tracking-widest px-6">Anda terdaftar sebagai Penulis Independen.</p>
+                  </div>
                 )}
               </div>
             </div>
           </div>
 
-          {/* Tombol Edit */}
-          <Link 
-            href="/profil/lengkapi" 
-            className="flex items-center gap-2 px-6 py-3 bg-white border-2 border-[#D9D9D9] hover:border-[#655348] text-[#655348] rounded-xl text-sm font-black uppercase tracking-wider transition-all active:scale-95"
-          >
-            <Edit3 size={16} /> Edit Profil
-          </Link>
         </div>
-
-        {/* GRID KONTEN */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-          
-          {/* KOLOM KIRI: Informasi Detail */}
-          <div className="bg-white p-8 rounded-[2.5rem] border border-[#D9D9D9]/30 shadow-[0_20px_50px_rgba(0,0,0,0.02)] flex flex-col gap-6">
-            <h3 className="text-sm font-black text-[#655348] uppercase tracking-[0.2em] border-b border-[#D9D9D9]/50 pb-3">
-              Informasi Akun
-            </h3>
-
-            {/* Email */}
-            <div className="flex gap-4 items-start">
-              <div className="p-3 bg-[#655348]/5 text-[#655348] rounded-xl">
-                <Mail size={18} />
-              </div>
-              <div>
-                <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Alamat Email</p>
-                <p className="text-sm font-semibold text-[#1A1A1A] break-all">{profil.email || user.email}</p>
-              </div>
-            </div>
-
-            {/* NIM / Nomor Identitas */}
-            {profil.nim && (
-              <div className="flex gap-4 items-start">
-                <div className="p-3 bg-[#655348]/5 text-[#655348] rounded-xl">
-                  <FileText size={18} />
-                </div>
-                <div>
-                  <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">NIM / Identitas</p>
-                  <p className="text-sm font-mono font-bold text-[#1A1A1A]">{profil.nim}</p>
-                </div>
-              </div>
-            )}
-
-            {/* Bergabung Sejak */}
-            <div className="flex gap-4 items-start">
-              <div className="p-3 bg-[#655348]/5 text-[#655348] rounded-xl">
-                <Calendar size={18} />
-              </div>
-              <div>
-                <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Bergabung Pada</p>
-                <p className="text-sm font-semibold text-[#1A1A1A]">
-                  {profil.created_at ? new Date(profil.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-'}
-                </p>
-              </div>
-            </div>
-
-            {/* Bio */}
-            {profil.bio && (
-              <div className="mt-2 pt-4 border-t border-[#D9D9D9]/50">
-                <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">Tentang Saya</p>
-                <p className="text-sm text-[#655348]/80 leading-relaxed font-medium bg-[#FDFBF7] p-4 rounded-2xl border border-[#D9D9D9]/20">
-                  {profil.bio}
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* KOLOM KANAN: Riwayat Jurnal / Submisi */}
-          <div className="lg:col-span-2 flex flex-col gap-6">
-            <div className="flex items-center justify-between border-b-2 border-[#D9D9D9] pb-4">
-              <h3 className="text-xl font-black text-[#655348] tracking-tight">
-                Riwayat Publikasi Artikel
-              </h3>
-              <span className="text-[11px] font-black text-[#655348] bg-[#655348]/10 px-3 py-1 rounded-md uppercase tracking-wider">
-                {listArtikel.length} Total
-              </span>
-            </div>
-
-            {/* Daftar Artikel */}
-            <div className="flex flex-col gap-4">
-              {listArtikel.length > 0 ? (
-                listArtikel.map((artikel) => (
-                  <div 
-                    key={artikel.id}
-                    className="bg-white p-6 rounded-3xl border border-[#D9D9D9]/40 hover:border-[#655348]/40 shadow-[0_10px_30px_rgba(0,0,0,0.01)] transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-4 group"
-                  >
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <span className="text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded bg-[#D9D9D9]/50 text-[#655348]">
-                          {artikel.kategori_nama || 'Umum'}
-                        </span>
-                        <span className={`text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded ${
-                          artikel.status === 'published' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-amber-50 text-amber-700 border border-amber-200'
-                        }`}>
-                          {artikel.status}
-                        </span>
-                      </div>
-                      <h4 className="font-bold text-base text-[#1A1A1A] group-hover:text-[#655348] transition-colors leading-snug">
-                        {artikel.judul}
-                      </h4>
-                      <p className="text-xs text-gray-400 mt-1 font-medium">
-                        Dibuat pada: {artikel.created_at ? new Date(artikel.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'}
-                      </p>
-                    </div>
-
-                    {artikel.status === 'published' && (
-                      <Link 
-                        href={`/artikel/${artikel.slug}`} 
-                        className="p-3 bg-[#655348]/5 text-[#655348] hover:bg-[#655348] hover:text-white rounded-xl transition-all self-end md:self-center"
-                      >
-                        <ArrowRight size={18} />
-                      </Link>
-                    )}
-                  </div>
-                ))
-              ) : (
-                <div className="text-center py-16 bg-white rounded-[2.5rem] border border-[#D9D9D9]/30 shadow-[0_20px_50px_rgba(0,0,0,0.02)]">
-                  <BookOpen size={40} className="mx-auto text-gray-300 mb-3" />
-                  <p className="text-gray-400 text-sm font-bold uppercase tracking-wider">Belum Ada Artikel</p>
-                  <p className="text-xs text-gray-400 mt-1">Anda belum pernah mengirimkan atau mempublikasikan artikel.</p>
-                  <Link href="/editor/new" className="inline-block mt-4 text-xs font-black uppercase tracking-widest text-[#655348] hover:underline">
-                    Tulis Artikel Sekarang &rarr;
-                  </Link>
-                </div>
-              )}
-            </div>
-
-          </div>
-        </div>
-
       </div>
-    </main>
+    </div>
   )
 }

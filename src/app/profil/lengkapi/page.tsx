@@ -38,7 +38,7 @@ export default function LengkapiProfilPage() {
 
         // Tarik data profil dari tabel internal jika ada
         const { data: profil } = await supabase
-          .from('penulis')
+          .from('profiles')
           .select('*')
           .eq('id', user.id)
           .single()
@@ -82,7 +82,7 @@ export default function LengkapiProfilPage() {
 
       // Gunakan upsert untuk memasukkan data baru atau memperbarui data lama
       const { error: upsertError } = await supabase
-        .from('penulis')
+        .from('profiles')
         .upsert(payload)
 
       if (upsertError) throw upsertError

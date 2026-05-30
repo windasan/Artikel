@@ -1,6 +1,6 @@
 // src/types/database.ts
 
-export type Role = 'admin' | 'design_layout' | 'redaksi' | 'publikasi' | 'it'
+export type Role = 'admin' | 'design_layout' | 'redaksi' | 'publikasi' | 'it' | 'penulis'
 export type ArticleStatus = 'draft' | 'pending_redaksi' | 'pending_publikasi' | 'published' | 'rejected'
 export type AuthorType = 'individual' | 'group'
 
@@ -10,6 +10,7 @@ export const ROLE_LABELS: Record<Role, string> = {
   redaksi:        'Tim Redaksi',
   publikasi:      'Tim Publikasi',
   it:             'Tim IT',
+  penulis:        'Pembaca',
 }
 
 export interface Profile {

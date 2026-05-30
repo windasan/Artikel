@@ -5,7 +5,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Loader2, User, Save, ArrowLeft, AlertCircle } from 'lucide-react'
+import { Loader2, Save, ArrowLeft, AlertCircle } from 'lucide-react'
 
 export default function LengkapiProfilPage() {
   const router = useRouter()
@@ -44,7 +44,8 @@ export default function LengkapiProfilPage() {
           .single()
 
         if (profil) {
-          setNama(profil.nama || '')
+          // FIX: menggunakan nama_lengkap bukan nama (field 'nama' tidak ada di tipe Profile)
+          setNama(profil.nama_lengkap || '')
           setNim(profil.nim || '')
           setInstansi(profil.instansi || 'Universitas Negeri Yogyakarta')
           setBio(profil.bio || '')
@@ -71,16 +72,15 @@ export default function LengkapiProfilPage() {
 
       const payload = {
         id: user.id,
-        nama,
+        // FIX: menggunakan nama_lengkap sesuai skema tabel profiles
+        nama_lengkap: nama,
         nim: nim || null,
-        instansi,
         bio: bio || null,
         avatar_url: avatarUrl || null,
         email: email,
         updated_at: new Date().toISOString()
       }
 
-      // Gunakan upsert untuk memasukkan data baru atau memperbarui data lama
       const { error: upsertError } = await supabase
         .from('profiles')
         .upsert(payload)

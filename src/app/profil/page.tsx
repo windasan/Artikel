@@ -84,8 +84,7 @@ export default function ProfilPage() {
             <div className="flex-1">
               <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-4">
                 <span className="px-4 py-1.5 bg-white/20 backdrop-blur-md rounded-full text-white text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
-                  <Shield size={14} /> {profile?.role?.replace('_', ' ') || 'Penulis'}
-                </span>
+                <Shield size={14} /> {profile?.role === 'penulis' ? 'Pembaca' : (profile?.role?.replace('_', ' ') || 'Pembaca')}                </span>
               </div>
               <h1 className="font-display text-[36px] md:text-[56px] font-black text-white tracking-tighter leading-none mb-2">
                 {profile?.nama_lengkap || 'Pengguna Baru'}

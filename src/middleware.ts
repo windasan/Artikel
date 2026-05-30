@@ -1,3 +1,4 @@
+// src/middleware.ts
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
@@ -27,7 +28,7 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
 
   // Routes that require login
-  const protectedRoutes = ['/editor', '/profil', '/admin', '/redaksi', '/publikasi', '/it']
+  const protectedRoutes = ['/editor', '/profil', '/admin']
 
   if (protectedRoutes.some(r => pathname.startsWith(r)) && !user) {
     const url = request.nextUrl.clone()
@@ -36,40 +37,27 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // Role based access
-  if (user) {
+  // Editor new/create: only design_layout + admin
+  if (
+    user &&
+    (pathname === '/editor/new' || pathname.startsWith('/editor/') && pathname !== '/editor/drafts')
+  ) {
+    // FIX: Menggunakan tabel 'profiles' (bukan 'penulis' yang tidak ada)
     const { data: profile } = await supabase
       .from('profiles')
       .select('role')
       .eq('id', user.id)
       .single()
 
-    const role = profile?.role ?? 'penulis'
+    const role = profile?.role ?? ''
+    const canEdit = ['admin', 'design_layout', 'redaksi', 'publikasi'].includes(role)
 
-    // Pengecekan akses Tulis Artikel / Editor
-    if (pathname.startsWith('/editor')) {
-        const isEditorRole = ['admin', 'design_layout', 'redaksi', 'publikasi'].includes(role);
-        const isWriterRole = ['admin', 'design_layout'].includes(role);
-        
-        if (pathname === '/editor/new' && !isWriterRole) {
-            return NextResponse.redirect(new URL('/profil', request.url))
-        } else if (!isEditorRole) {
-            return NextResponse.redirect(new URL('/profil', request.url))
-        }
+    if (pathname === '/editor/new' && !['admin', 'design_layout'].includes(role)) {
+      return NextResponse.redirect(new URL('/editor/drafts', request.url))
     }
 
-    // Pengecekan Dashboard Spesifik
-    if (pathname.startsWith('/admin') && role !== 'admin') {
-      return NextResponse.redirect(new URL('/profil', request.url))
-    }
-    if (pathname.startsWith('/redaksi') && !['admin', 'redaksi'].includes(role)) {
-      return NextResponse.redirect(new URL('/profil', request.url))
-    }
-    if (pathname.startsWith('/publikasi') && !['admin', 'publikasi'].includes(role)) {
-      return NextResponse.redirect(new URL('/profil', request.url))
-    }
-    if (pathname.startsWith('/it') && !['admin', 'it'].includes(role)) {
-      return NextResponse.redirect(new URL('/profil', request.url))
+    if (!canEdit && pathname.startsWith('/editor/')) {
+      return NextResponse.redirect(new URL('/', request.url))
     }
   }
 

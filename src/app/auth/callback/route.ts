@@ -20,12 +20,12 @@ export async function GET(request: Request) {
       const email = data.user.email
       
       // VALIDASI DOMAIN UNY (Mencegah akun luar masuk)
-      const isUnyEmail = email?.endsWith('@student.uny.ac.id') || email?.endsWith('@staff.uny.ac.id')
+      const isUnyEmail = email?.endsWith('@student.uny.ac.id') || email?.endsWith('@uny.ac.id')
 
       if (!isUnyEmail) {
         // Hapus sesi jika bukan email UNY
         await supabase.auth.signOut()
-        return NextResponse.redirect(`${origin}/login?error=Akses_ditolak._Gunakan_email_resmi_UNY.`)
+        return NextResponse.redirect(`${origin}/login?error=Akses ditolak. Gunakan email resmi UNY.`)
       }
 
       // Pastikan URL redirect menggunakan origin dari request 

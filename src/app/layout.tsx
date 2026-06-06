@@ -18,8 +18,8 @@ const montserrat = Montserrat({
 });
 export const metadata: Metadata = {
   title: {
-    default: 'Jurnal Pariwisata UNY',
-    template: '%s — Jurnal Pariwisata UNY',
+    default: 'Ruang Jelajah Pariwisata',
+    template: '%s — Ruang Jelajah Pariwisata',
   },
   description: 'Portal publikasi kolaboratif mahasiswa Program Studi Pariwisata UNY.',
 }
